@@ -138,43 +138,43 @@ mod tests {
 
 	#[test]
 	fn test_not_grey_bit(){
-		let header = Header { header_value: 0x8FFFFFFFF};
+		let header = Header { header_value: 0xFFFFFF8FFFFFFFF};
 		assert_eq!(header.grey_bit(), 0);
 	}
 
 	#[test]
 	fn test_not_hash(){
-		let header = Header { header_value: 0xFFFFFFFF000003FF};
+		let header = Header { header_value: 0xFFFFFFFF000003FF };
 		assert_eq!(header.hash_bits(), 0);
 	}
 
 	#[test]
 	fn test_not_immutable_bit(){
-		let header = Header { header_value: 0xEFFFFFFFFFF};
+		let header = Header { header_value: 0xFFFFFEFFFFFFFFFF };
 		assert_eq!(header.immutable_bit(), 0);
 	}
 
 	#[test]
 	fn test_not_marked_bit(){
-		let header = Header { header_value: 0xFEFF };
+		let header = Header { header_value: 0xFFFFFFFFFFFFFEFF };
 		assert_eq!(header.marked_bit(), 0);
 	}
 
 	#[test]
 	fn test_not_number_of_slots(){
-		let header = Header { header_value: 0xFF00 };
+		let header = Header { header_value: 0xFFFFFFFFFFFFFF00 };
 		assert_eq!(header.number_of_slots_bits(), 0);
 	}
 
 	#[test]
 	fn test_not_pinned_bit(){
-		let header = Header { header_value: 0xDFFFFFFFF};
+		let header = Header { header_value: 0xFFFFFFFDFFFFFFFF };
 		assert_eq!(header.pinned_bit(), 0);
 	}
 
 	#[test]
 	fn test_not_remembered_bit(){
-		let header = Header { header_value: 0xBFFFFFFFF };
+		let header = Header { header_value: 0xFFFFFEFFFFFFFFFF };
 		assert_eq!(header.remembered_bit(), 0);
 	}
 
