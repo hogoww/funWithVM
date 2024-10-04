@@ -8,5 +8,5 @@ fn main() {
 	let space = MemorySpace::for_bit_size(memory_space_size);
 	space.report();
 	let header = Header {header_value: std::usize::MAX };
-	println!("{}", header.class_index_bits());
+	println!("{}", header.number_of_slots_bits());
 }
