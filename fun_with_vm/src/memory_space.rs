@@ -17,3 +17,21 @@ impl MemorySpace {
 		println!("memory_vector = {}" , self.memory_vector.len());
 	}
 }
+
+use std::ops::Index;
+
+impl Index<usize> for MemorySpace{
+	type Output = usize;
+	
+	fn index(&self, index: usize) -> &Self::Output {
+		return &self.memory_vector[index];
+	}
+}
+
+use std::ops::IndexMut;
+
+impl IndexMut<usize> for MemorySpace {
+	fn index_mut(&mut self, index: usize) -> & mut Self::Output {
+		return &mut self.memory_vector[index];
+	}
+}
