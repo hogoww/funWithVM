@@ -2,7 +2,11 @@ pub struct Header{
 	pub header_value: usize,
 }
 
-impl Header{
+impl Header {
+	pub fn get_value(&self) -> usize {
+		return self.header_value;
+	}
+	
 	// Multiple bits
 	pub fn number_of_slots_bits(&self) -> usize {
 		return self.header_value & 0xFF;
