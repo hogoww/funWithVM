@@ -81,7 +81,7 @@ impl Oop {
 
 #[cfg(test)]
 mod tests {
-	use crate::Oop;
+//	use crate::Oop;
 
 	// int main(){
 	//   MemorySpace<WORD_TYPE> ms(640);
