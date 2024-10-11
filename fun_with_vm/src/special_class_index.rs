@@ -1,4 +1,4 @@
 #[repr(usize)]
 pub enum SpecialClassIndexes{
-	FreeObject = 0,
+	FreeObject = 1,
 }

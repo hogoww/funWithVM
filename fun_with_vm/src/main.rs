@@ -14,12 +14,16 @@ fn main() {
 	let memory_space_size: usize = 240;
 	let space = MemorySpace::for_bit_size(memory_space_size);
 	space.report();
+
+
+	let mut oop = Oop { memory: space, index: 0 };
+	println!("first oop, should have all slots in space: {}", oop.header_value());
+	println!("first oop, should be free: {}", oop.get_header() .class_index_bits());
+
+	
 	let header = Header { header_value: std::usize::MAX };
 	println!("number of slots in full header: {}", header.number_of_slots_bits());
-
-	let mut oop = Oop { memory: space, index: 0};
-	println!("number of slots with empty header: {}", oop.header_value());
 	oop.set_header(header);
-	println!("number of slots of oop  with full header: {}", oop.get_header().number_of_slots_bits());
+	println!("number of slots of oop with full header: {}", oop.get_header().number_of_slots_bits());
 
 }

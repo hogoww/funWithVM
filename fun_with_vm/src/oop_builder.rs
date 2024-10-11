@@ -16,7 +16,6 @@ impl OopBuilder {
 	}
 
 	pub fn build(&self, space: & mut MemorySpace) -> usize {
-//   WORD_TYPE numberOfWords = this -> numberOfSlots + 1; // + header
 		//   TODO(allocator) allocator -> whereToAllocateWords(numberOfWords);
 		let allocation_index = 0;
 		let new_oop_size = self.number_of_slots + 1; // header_size
@@ -29,7 +28,7 @@ impl OopBuilder {
 		oop_header.set_number_of_slots_bits(self.number_of_slots);
 		oop_header.set_class_index_bits(self.class_index);
 		//oop_header.set_format_bits(self.format);
-		
+
 		space[allocation_index] = oop_header.header_value;
 		space[new_free_oop_index] = free_header.header_value;
 		return allocation_index;
