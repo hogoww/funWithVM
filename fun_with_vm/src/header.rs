@@ -86,6 +86,11 @@ impl Header {
 	pub fn set_remembered_bit(&mut self) {
 		self.header_value = self.header_value | 0x10000000000;
 	}
+
+	pub fn oop_size(&self) -> usize {
+		//TODO(big_header)
+		return self.number_of_slots_bits() + 1; //header
+	}
 }
 
 #[cfg(test)]

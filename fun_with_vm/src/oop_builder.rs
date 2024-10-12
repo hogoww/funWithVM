@@ -35,7 +35,7 @@ impl OopBuilder {
 	}
 
 
-// // API, for code readability
+	// API, for code readability
 	pub fn reset(&mut self){
 		self.initialize();
 	}
@@ -49,25 +49,8 @@ impl OopBuilder {
 		self.number_of_slots = new_number_of_slots;
 	}
 
-	pub fn set_class_index(&mut self, new_class_index: SpecialClassIndexes){
-		self.class_index = new_class_index as usize;
+	pub fn set_class_index(&mut self, new_class_index: usize){
+		self.class_index = new_class_index;
 	}
-
-// template <typename WORD_TYPE>
-// MemorySpace<WORD_TYPE>* OopBuilder<WORD_TYPE>::getMemorySpace(){
-//   return this -> memorySpace;
-// }
-
-// // template <typename WORD_TYPE>
-// // void OopBuilder<WORD_TYPE>::setMemorySpace(const MemorySpace<WORD_TYPE>* aMemorySpace){
-// //   this -> memorySpace = aMemorySpace;
-// // }
-
-// // template <typename WORD_TYPE>
-// // void OopBuilder<WORD_TYPE>::setAllocator(const Allocator<WORD_TYPE>* allocator){
-// //   this -> allocator = allocator;
-// // }
-
-// #endif
 
 }
