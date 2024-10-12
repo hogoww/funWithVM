@@ -1,25 +1,25 @@
-use crate::memory_space::MemorySpace;
+//use crate::memory_space::MemorySpace;
 use crate::header::Header;
 
 
 pub struct Oop {
-	pub memory: MemorySpace,
-	pub index: usize,
+	index: usize,
+	contents: Vec<usize>,
 }
 
 
 impl Oop {
-	// template <typename WORD_TYPE>
-	// Oop<WORD_TYPE>::Oop(WORD_TYPE* anAddress):address(anAddress), header(anAddress)
-	// {}
+	pub fn new(index: usize, contents: Vec<usize>) -> Self {
+		return Self { index: index, contents: contents };
+	}
 	
 	fn header_index(&self) -> usize {
-		return self.index;
+		return 0;
 	}
 	
 	pub fn set_header(&mut self, header: Header) {
 		let index : usize = self.header_index();
-		self.memory[index] = header.get_value();
+		self.contents[index] = header.get_value();
 	}
 
 	pub fn get_header(&self) -> Header {
@@ -28,7 +28,7 @@ impl Oop {
 
 	//shortcut
 	pub fn header_value(&self) -> usize {
-		return self.memory[self.header_index()]
+		return self.contents[self.header_index()]
 	}
 
 	pub fn get_index(&self) -> usize {
@@ -70,14 +70,13 @@ impl Oop {
 		return self.index + an_index;
 	}
 
-	pub fn slot_at_put(&mut self, an_index: usize,an_oop_address: usize){
+	pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize){
 		if self.slot_bound_check(an_index)
 		{}// exit(1);
-		let slot_index = self.index + an_index;
-		self.memory[slot_index] = an_oop_address;
+		let slot_index = self.header_index() + an_index;
+		self.contents[slot_index] = an_oop_address;
 	}
 }
-
 
 #[cfg(test)]
 mod tests {
