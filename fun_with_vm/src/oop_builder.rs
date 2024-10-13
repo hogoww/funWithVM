@@ -1,4 +1,5 @@
 use crate::header::Header;
+use crate::allocator::where_to_allocate;
 use crate::memory_space::MemorySpace;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -16,8 +17,8 @@ impl OopBuilder {
 	}
 
 	pub fn build(&self, space: & mut MemorySpace) -> usize {
-		//   TODO(allocator) allocator -> whereToAllocateWords(numberOfWords);
-		let allocation_index = 0;
+		// Need to pass the space as a muttable, but this is unrequired by rust ?
+		let allocation_index = where_to_allocate(self.number_of_slots, space);
 		let new_oop_size = self.number_of_slots + 1; // header_size
 		let new_free_oop_index = allocation_index + new_oop_size;
 		let mut oop_header = Header { header_value: 0 };
@@ -42,7 +43,9 @@ impl OopBuilder {
 	
 	pub fn initialize(&mut self){
 		self.number_of_slots = 0;
-		self.class_index = 1; //should probably be different than existing classes (i.e., freeObject)
+		//The class index should probably be different than existing classes (i.e., freeObject)
+		//Maybe it should always be required
+		self.class_index = 2; 
 	}
 
 	pub fn set_number_of_slots(&mut self, new_number_of_slots: usize){

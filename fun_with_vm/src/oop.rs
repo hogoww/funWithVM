@@ -1,6 +1,6 @@
 //use crate::memory_space::MemorySpace;
 use crate::header::Header;
-
+use crate::special_class_index::SpecialClassIndexes;
 
 pub struct Oop {
 	index: usize,
@@ -35,10 +35,9 @@ impl Oop {
 		return self.index;
 	}
 
-// template <typename WORD_TYPE>
-// bool Oop<WORD_TYPE>::isFreeOop(){
-//   return this -> header.classIndexBits() == specialClassIndexes::freeObject;
-// }
+	pub fn is_free(&self) -> bool {
+		return self.get_header().class_index_bits() == SpecialClassIndexes::FreeObject as usize;
+	}
 
 // template <typename WORD_TYPE>
 // void Oop<WORD_TYPE>::becomeFreeOop(){
@@ -59,8 +58,12 @@ impl Oop {
 //   return this -> header.wordSize();
 // }
 
+	pub fn number_of_slots(&self) -> usize {
+		return self.get_header().number_of_slots_bits()
+	}
+	
 	fn slot_bound_check(&self, an_index:usize) -> bool {
-		return an_index == 0 || an_index > self.get_header().number_of_slots_bits()
+		return an_index == 0 || an_index > self.number_of_slots();
 	}
 	
 	pub fn slot_at_index(&self, an_index: usize) -> usize {
