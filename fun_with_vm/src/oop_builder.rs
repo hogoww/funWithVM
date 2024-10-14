@@ -13,9 +13,21 @@ pub struct OopBuilder {
   
 impl OopBuilder {
 	pub fn new() -> OopBuilder {
-		return Self { class_index: 0, number_of_slots: 0 };
+		return Self { class_index: 2, number_of_slots: 0 };
 	}
-
+	
+	pub fn initialize(&mut self){
+		//The class index should probably be different than existing classes (i.e., freeObject)
+		//Maybe it should always be required
+		self.class_index = 2;
+		self.number_of_slots = 0;
+	}
+	
+	// API, for code readability
+	pub fn reset(&mut self){
+		self.initialize();
+	}
+	
 	pub fn build(&self, space: & mut MemorySpace) -> usize {
 		// Need to pass the space as a muttable, but this is unrequired by rust ?
 		let allocation_index = where_to_allocate(self.number_of_slots, space);
@@ -35,19 +47,6 @@ impl OopBuilder {
 		return allocation_index;
 	}
 
-
-	// API, for code readability
-	pub fn reset(&mut self){
-		self.initialize();
-	}
-	
-	pub fn initialize(&mut self){
-		self.number_of_slots = 0;
-		//The class index should probably be different than existing classes (i.e., freeObject)
-		//Maybe it should always be required
-		self.class_index = 2; 
-	}
-
 	pub fn set_number_of_slots(&mut self, new_number_of_slots: usize){
 		self.number_of_slots = new_number_of_slots;
 	}
@@ -55,5 +54,5 @@ impl OopBuilder {
 	pub fn set_class_index(&mut self, new_class_index: usize){
 		self.class_index = new_class_index;
 	}
-
 }
+

@@ -35,7 +35,7 @@ impl Oop {
 		return self.index;
 	}
 
-	pub fn is_free(&self) -> bool {
+	pub fn is_free_oop(&self) -> bool {
 		return self.get_header().class_index_bits() == SpecialClassIndexes::FreeObject as usize;
 	}
 

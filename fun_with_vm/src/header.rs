@@ -269,7 +269,6 @@ mod tests {
 	fn test_set_remembered_bit(){
 		let mut header = Header { header_value: 0 };
 		header.set_remembered_bit();
-		println!("header after bitset: {}", header.header_value);
 		assert_eq!(header.remembered_bit(), 1);
 	}
 }

@@ -11,11 +11,7 @@ pub struct MemorySpace {
 impl MemorySpace {
 
 	pub fn for_bit_size(memory_space_size: usize) -> Self {
-		let mut memory_space: Vec<usize> = Vec::with_capacity(memory_space_size);
-		//need to allocate the memory, since it's a vector, one case at a time.
-		for _i in 0..memory_space_size {
-			memory_space.push(0);
-		}
+		let mut memory_space: Vec<usize> = vec![0; memory_space_size];
 
 		// set first oop to be free & have all the slots in the space
 		let mut free_oop_header = Header{ header_value: 0 };
@@ -38,10 +34,14 @@ impl MemorySpace {
 	// Beware, no check that the index is correct
 	pub fn get_oop_at(&self, index: usize) -> Oop {
 		let header = Header { header_value: self[index] };
-		let mut oop_content : Vec<usize> = Vec::with_capacity(header.oop_size());
-		//self.memory_vector[index..header.oop_size()].(&mut oop_content);
-		oop_content.copy_from_slice(&self.memory_vector[index..header.oop_size()]);
+		let mut oop_content : Vec<usize> = vec![0; header.oop_size()];
+		//self.memory_vector[index..header.oop_size()].(&mut oop_content)
+		oop_content.copy_from_slice(&self.memory_vector[index..index+header.oop_size()]);
 		return Oop::new(index, oop_content);
+	}
+
+	pub fn first_oop(&self) -> Oop {
+		return self.get_oop_at(0);
 	}
 	
 	// pub fn setIndexToValue(&mut self, index: usize , value: usize){
