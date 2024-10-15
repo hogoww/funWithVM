@@ -21,7 +21,7 @@ impl Header {
 	}
 
 	pub fn set_hash_bits(&mut self, hash: usize) {
-		 self.header_value = ((self.header_value & 0xFFFFFFFF000003FF) | hash) << 10;
+		 self.header_value = (self.header_value & 0xFFFFFFFF000003FF) | (hash << 10);
 	}
 
 	pub fn format_bits(&self) -> usize {
@@ -29,7 +29,7 @@ impl Header {
 	}
 
 	pub fn set_format_bits(&mut self, format: usize) {
-		self.header_value = ((self.header_value & 0xFFFFFF01FFFFFFFF) | format) << 35;
+		self.header_value = (self.header_value & 0xFFFFFF01FFFFFFFF) | (format << 35);
 	}
 
 
@@ -38,7 +38,7 @@ impl Header {
 	}
 
 	pub fn set_class_index_bits(&mut self, class_index: usize) {
-		self.header_value = ((self.header_value & 0x000003FFFFFFFFFF) | class_index) << 42;
+		self.header_value = (self.header_value & 0x000003FFFFFFFFFF) | (class_index << 42);
 	}
 
 	// Individual Bits
@@ -69,7 +69,6 @@ impl Header {
 	pub fn set_pinned_bit(&mut self) {
 		self.header_value = self.header_value | 0x200000000;
 	}
-
 
 	pub fn grey_bit(&self) -> usize {
 		return (self.header_value & 0x100000000) >> 32;
@@ -271,4 +270,37 @@ mod tests {
 		header.set_remembered_bit();
 		assert_eq!(header.remembered_bit(), 1);
 	}
+
+	#[test]
+	fn test_set_remembered_bit_after_number_of_slots_keeps_slots(){
+		let mut header = Header { header_value: 0 };
+		header.set_number_of_slots_bits(42);
+		header.set_remembered_bit();
+		assert_eq!(header.number_of_slots_bits(), 42);
+	}
+
+	#[test]
+	fn test_set_class_index_after_number_of_slots_keeps_slots(){
+		let mut header = Header { header_value: 0 };
+		header.set_number_of_slots_bits(42);
+		header.set_class_index_bits(3);
+		assert_eq!(header.number_of_slots_bits(), 42);
+	}
+
+	#[test]
+	fn test_set_class_index_after_format_keep_slots(){
+		let mut header = Header { header_value: 0 };
+		header.set_number_of_slots_bits(42);
+		header.set_format_bits(3);
+		assert_eq!(header.number_of_slots_bits(), 42);
+	}
+
+	#[test]
+	fn test_set_class_index_after_hash_keep_slots(){
+		let mut header = Header { header_value: 0 };
+		header.set_number_of_slots_bits(42);
+		header.set_hash_bits(3);
+		assert_eq!(header.number_of_slots_bits(), 42);
+	}
+
 }
