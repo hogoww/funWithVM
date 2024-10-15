@@ -288,7 +288,7 @@ mod tests {
 	}
 
 	#[test]
-	fn test_set_class_index_after_format_keep_slots(){
+	fn test_set_format_after_number_of_slots_keeps_slots(){
 		let mut header = Header { header_value: 0 };
 		header.set_number_of_slots_bits(42);
 		header.set_format_bits(3);
@@ -296,11 +296,22 @@ mod tests {
 	}
 
 	#[test]
-	fn test_set_class_index_after_hash_keep_slots(){
+	fn test_set_hash_after_number_of_slots_keeps_slots(){
 		let mut header = Header { header_value: 0 };
 		header.set_number_of_slots_bits(42);
 		header.set_hash_bits(3);
 		assert_eq!(header.number_of_slots_bits(), 42);
 	}
+
+	
+	#[test]
+	fn test_set_number_of_slots_after_hash_keep_hash(){
+		let mut header = Header { header_value: 0 };
+		header.set_hash_bits(3);
+		header.set_number_of_slots_bits(42);
+		assert_eq!(header.number_of_slots_bits(), 42);
+	}
+
+	
 
 }
