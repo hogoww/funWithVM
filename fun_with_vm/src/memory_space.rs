@@ -35,8 +35,7 @@ impl MemorySpace {
 	pub fn get_oop_at(&self, index: usize) -> Oop {
 		let header = Header { header_value: self[index] };
 		let mut oop_content : Vec<usize> = vec![0; header.oop_size()];
-		//self.memory_vector[index..header.oop_size()].(&mut oop_content)
-		oop_content.copy_from_slice(&self.memory_vector[index..index+header.oop_size()]);
+		oop_content.copy_from_slice(&self.memory_vector[index..index + header.oop_size()]);
 		return Oop::new(index, oop_content);
 	}
 
@@ -47,8 +46,7 @@ impl MemorySpace {
 	// pub fn setIndexToValue(&mut self, index: usize , value: usize){
 	// 	self.memory_vector[index] = value
 	// }
-
-		
+	
 	pub fn report(&self){
 		println!("memory_vector = {}" , self.memory_vector.len());
 	}

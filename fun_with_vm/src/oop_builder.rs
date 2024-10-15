@@ -30,20 +30,25 @@ impl OopBuilder {
 	
 	pub fn build(&self, space: & mut MemorySpace) -> usize {
 		// Need to pass the space as a muttable, but this is unrequired by rust ?
-		let allocation_index = where_to_allocate(self.number_of_slots, space);
-		let new_oop_size = self.number_of_slots + 1; // header_size
-		let new_free_oop_index = allocation_index + new_oop_size;
+		let allocation_index : usize = where_to_allocate(self.number_of_slots, space);
+		let new_oop_size : usize = self.number_of_slots + 1; // header_size
+		let new_free_oop_index : usize = allocation_index + new_oop_size;
 		let mut oop_header = Header { header_value: 0 };
 		let mut free_header = Header { header_value: space[ allocation_index ] };
-		free_header.set_number_of_slots_bits(free_header.number_of_slots_bits() - new_oop_size);
-		free_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
 
 		oop_header.set_number_of_slots_bits(self.number_of_slots);
 		oop_header.set_class_index_bits(self.class_index);
-		//oop_header.set_format_bits(self.format);
 
+		let new_free_number_of_slots = free_header.number_of_slots_bits().overflowing_sub(oop_header.oop_size());
+
+		if ! new_free_number_of_slots.1 {
+			free_header.set_number_of_slots_bits(new_free_number_of_slots.0);
+			
+			free_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
+			space[new_free_oop_index] = free_header.header_value;
+		}
+		
 		space[allocation_index] = oop_header.header_value;
-		space[new_free_oop_index] = free_header.header_value;
 		return allocation_index;
 	}
 

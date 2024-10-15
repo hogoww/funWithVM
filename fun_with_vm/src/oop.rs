@@ -1,4 +1,4 @@
-//use crate::memory_space::MemorySpace;
+use crate::memory_space::MemorySpace;
 use crate::header::Header;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -39,13 +39,24 @@ impl Oop {
 		return self.get_header().class_index_bits() == SpecialClassIndexes::FreeObject as usize;
 	}
 
-// template <typename WORD_TYPE>
-// void Oop<WORD_TYPE>::becomeFreeOop(){
-//   this -> header.setClassIndexBits(specialClassIndexes::freeObject);
-// }
+	pub fn become_free_oop(&mut self, space: &mut MemorySpace) {
+		let mut header = self.get_header();
+		header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
+		let header_index = self.header_index();
+		self.contents[header_index] = header.header_value;
+		self.apply_to_space(space);
+	}
+
+	pub fn apply_to_space(&mut self,space: &mut MemorySpace){
+		let mut index = self.index;
+		for value in &self.contents {
+			space[index] = *value;
+			index = index + 1;
+		}
+	}
 
 	pub fn next_oop_index(&self) -> usize {
-		return self.index + self.get_header().number_of_slots_bits();
+		return self.index + self.get_header().oop_size();
 	}
 
 // template <typename WORD_TYPE>
@@ -59,7 +70,7 @@ impl Oop {
 // }
 
 	pub fn number_of_slots(&self) -> usize {
-		return self.get_header().number_of_slots_bits()
+		return self.get_header().number_of_slots_bits();
 	}
 	
 	fn slot_bound_check(&self, an_index:usize) -> bool {
@@ -83,6 +94,20 @@ impl Oop {
 
 #[cfg(test)]
 mod tests {
+	use crate::memory_space::MemorySpace;
+	use crate::oop_builder::OopBuilder;
+	
+	#[test]
+	fn become_free_oop_is_free_oop(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let builder = OopBuilder::new();
+		let oop_index = builder.build(& mut space);
+		let mut new_object = space.get_oop_at(oop_index);
+		
+		new_object.become_free_oop(&mut space);
+		assert!(new_object.is_free_oop());
+	}
+
 //	use crate::Oop;
 
 	// int main(){
