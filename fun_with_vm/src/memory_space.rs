@@ -28,7 +28,7 @@ impl MemorySpace {
 	}
 
 	pub fn get_end_index(&self) -> usize {
-		return self.memory_vector.capacity();
+		return self.memory_vector.capacity() - 1; // 0 based
 	}
 
 	// Beware, no check that the index is correct

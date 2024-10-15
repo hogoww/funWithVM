@@ -59,6 +59,10 @@ impl Oop {
 		return self.index + self.get_header().oop_size();
 	}
 
+	pub fn next_oop(&self, space: &MemorySpace) -> Oop {
+		return space.get_oop_at(self.next_oop_index());
+	}
+
 // template <typename WORD_TYPE>
 // WORD_TYPE Oop<WORD_TYPE>::bitSize(){
 //   return this -> header.bitSize();

@@ -46,150 +46,86 @@ mod tests {
 		assert_eq!(new_object, space.get_start_index());
 	}
 
-// ==> testAllocateTwoObjectsFillsTheSpace.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
+	#[test]
+	fn test_allocate_big_object_fills_the_space(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(239);
+		builder.build(& mut space);
+		println!("{}, {}",space.first_oop().next_oop_index(), space.get_end_index());
+		assert!(space.first_oop().next_oop_index() > space.get_end_index());
+	}
 
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
+	#[test]
+	fn test_allocate_two_objects_first_object_is_not_overriden(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
+		builder.reset();
+		builder.set_number_of_slots(2);
+		builder.build(& mut space);
 
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-  
-//   oopBuilder -> reset();
-//   oopBuilder -> setNumberOfSlots(2);
-//   oopBuilder -> build();
+		assert_eq!(space.first_oop().get_header().number_of_slots_bits(), 1);
+	}
+
+	#[test]
+	fn test_allocate_two_objects_has_two_objects(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
+		builder.reset();
+		builder.set_number_of_slots(2);
+		builder.build(& mut space);
+
+		assert!(space.first_oop().next_oop(&space).next_oop(&space).is_free_oop());
+	}
+
+	#[test]
+	fn test_allocate_two_objects_second_object_has_correct_number_of_slots(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
+		builder.reset();
+		builder.set_number_of_slots(2);
+		builder.build(& mut space);
+
+		assert_eq!(space.first_oop().next_oop(&space).get_header().number_of_slots_bits(), 2);
+}
+
+	#[test]
+	fn test_allocate_two_objects_second_object_is_not_free(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
+		builder.reset();
+		builder.set_number_of_slots(2);
+		builder.build(& mut space);
+		
+		assert!(! space.first_oop().next_oop(&space).is_free_oop() );
+	}
+
+	#[test]
+	fn test_moved_free_object_has_less_slots(){
+	
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
+		
+		assert_eq!(space.first_oop().next_oop(&space).get_header().number_of_slots_bits(), 237);// 2 == oop header + slot & 0 based
+	}
+
+	#[test]
+	fn test_moved_free_object_is_after_first(){
+		let mut space = MemorySpace::for_bit_size(240);
+		let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(& mut space);
     
-//   cAssert(__LINE__, ms.firstOop().nextOop().nextOop().nextOop().getAddress() == ms.getEndAddress());
-//   testPassed();
-// }
-
-// ==> testAllocateTwoObjectsFirstObjectIsNotOverriden.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-  
-//   oopBuilder -> reset();
-//   oopBuilder -> setNumberOfSlots(2);
-//   oopBuilder -> build();
-
-//   cAssertInts(__LINE__, ms.firstOop().getHeader().numberOfSlotsBits(), 1);
-//   testPassed();
-// }
-
-// ==> testAllocateTwoObjectsHasTwoObjects.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-  
-//   oopBuilder -> reset();
-//   oopBuilder -> setNumberOfSlots(2);
-//   oopBuilder -> build();
-    
-//   cAssert(__LINE__, ms.firstOop().nextOop().nextOop().isFreeOop());
-//   testPassed();
-// }
-
-// ==> testAllocateTwoObjectsSecondObjectHasCorrectNumberOfSlots.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-  
-//   oopBuilder -> reset();
-//   oopBuilder -> setNumberOfSlots(2);
-//   oopBuilder -> build();
-    
-//   cAssertInts(__LINE__, ms.firstOop().nextOop().getHeader().numberOfSlotsBits(), 2);
-//   testPassed();
-// }
-
-// ==> testAllocateTwoObjectsSecondObjectIsNotFree.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-  
-//   oopBuilder -> reset();
-//   oopBuilder -> setNumberOfSlots(2);
-//   oopBuilder -> build();
-    
-//   cAssert(__LINE__, not ms.firstOop().nextOop().isFreeOop() );
-//   testPassed();
-// }
-
-// ==> testMovedFreeObjectHasLessSlots.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-    
-//   cAssertInts(__LINE__, ms.firstOop().nextOop().getHeader().numberOfSlotsBits(), ms.wordSpaceSize() - 2 - 1);// 2 == oop header + slot, 1 == freeOopheader
-//   testPassed();
-// }
-
-// ==> testMovedFreeObjectIsAfterFirst.cpp <==
-// #include "memorySpace.hpp"
-// #include "cTestCase.h"
-
-// #ifndef WORD_TYPE
-// #define WORD_TYPE uint64_t
-// #endif
-
-// int main(){
-//   MemorySpace<WORD_TYPE> ms(640);
-//   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-//   oopBuilder -> setNumberOfSlots(1);
-//   oopBuilder -> build();
-    
-//   cAssert(__LINE__, ms.firstOop().nextOop().isFreeOop());
-//   testPassed();
-// }
-
+		assert!(space.first_oop().next_oop(&space).is_free_oop());
+	}
 }
