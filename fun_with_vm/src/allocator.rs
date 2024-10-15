@@ -2,7 +2,7 @@ use crate::memory_space::MemorySpace;
 use crate::oop::Oop;
 
 //Remove this mutability...? this function doesn't need to mutate the memory space
-pub fn where_to_allocate(number_of_usize: usize , space: &mut MemorySpace) -> usize {
+pub fn where_to_allocate(number_of_usize: usize , space: &MemorySpace) -> usize {
 	let mut index : usize = space.get_start_index();
 	let last_index = space.get_end_index();
 

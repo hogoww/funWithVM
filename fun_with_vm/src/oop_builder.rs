@@ -30,7 +30,7 @@ impl OopBuilder {
 	
 	pub fn build(&self, space: & mut MemorySpace) -> usize {
 		// Need to pass the space as a muttable, but this is unrequired by rust ?
-		let allocation_index : usize = where_to_allocate(self.number_of_slots, space);
+		let allocation_index : usize = where_to_allocate(self.number_of_slots, &space);
 		let new_oop_size : usize = self.number_of_slots + 1; // header_size
 		let new_free_oop_index : usize = allocation_index + new_oop_size;
 		let mut oop_header = Header { header_value: 0 };
