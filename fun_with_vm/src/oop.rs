@@ -88,7 +88,7 @@ impl Oop {
     pub fn slot_at_index(&self, an_index: usize) -> usize {
         if self.slot_bound_check(an_index) { //exit(1);
         }
-        return self.index + an_index;
+        return self.contents[an_index];
     }
 
     pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize) {
@@ -102,6 +102,7 @@ impl Oop {
 mod tests {
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
+	use crate::oop::Oop;
 
     #[test]
     fn become_free_oop_is_free_oop() {
@@ -114,18 +115,31 @@ mod tests {
         assert!(new_object.is_free_oop());
     }
 
-    //	use crate::Oop;
+	#[test]
+	fn test_slot_at_index_returns_value() {
+        let mut space = MemorySpace::for_bit_size(240);
+        let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		let oop_index : usize = builder.build(&mut space);
+		let slot_index : usize = 1;
+		let slot_value : usize = 3;
+		space[oop_index + slot_index] = slot_value;
 
-    // int main(){
-    //   MemorySpace<WORD_TYPE> ms(640);
-    //   OopBuilder<WORD_TYPE>* oopBuilder = ms.getOopBuilder();
-    //   oopBuilder -> setNumberOfSlots(1);
-    //   oopBuilder -> build();
-    //   oopBuilder -> build();
+		let oop : Oop = space.first_oop();
+        assert_eq!(oop.slot_at_index(1), slot_value);
+	}
+	
+	#[test]
+	fn test_slot_at_put_sets_value() {
+        let mut space = MemorySpace::for_bit_size(240);
+        let mut builder = OopBuilder::new();
+		builder.set_number_of_slots(1);
+		builder.build(&mut space);
+		let slot_index : usize = 1;
+		let slot_value : usize = 3;
 
-    //   Oop<WORD_TYPE> container = ms.firstOop();
-    //   container.slotAtPut( 1 , container.nextOop().getAddress());
-
-    //   cAssert(__LINE__, container.slotAt(1).getAddress() == ms.firstOop().nextOop().getAddress());
-    // }
+		let mut oop : Oop = space.first_oop();
+		oop.slot_at_put(slot_index,slot_value);
+        assert_eq!(oop.slot_at_index(1), slot_value);
+	}
 }
