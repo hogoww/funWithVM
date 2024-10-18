@@ -25,7 +25,7 @@ fn main() {
     // println!("first oop class index, should be free (= 1): {}", oop.get_header() .class_index_bits());
 
     let header = Header {
-        header_value: std::usize::MAX,
+        header_value: usize::MAX,
     };
     println!(
         "number of slots in full header: {} (should be 255)",

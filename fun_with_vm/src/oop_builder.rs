@@ -12,10 +12,10 @@ pub struct OopBuilder {
 
 impl OopBuilder {
     pub fn new() -> OopBuilder {
-        return Self {
+        Self {
             class_index: 2,
             number_of_slots: 0,
-        };
+        }
     }
 
     pub fn initialize(&mut self) {
@@ -31,7 +31,7 @@ impl OopBuilder {
     }
 
     pub fn build(&self, space: &mut MemorySpace) -> usize {
-        let allocation_index: usize = where_to_allocate(self.number_of_slots, &space);
+        let allocation_index: usize = where_to_allocate(self.number_of_slots, space);
         let new_oop_size: usize = self.number_of_slots + 1; // header_size
         let new_free_oop_index: usize = allocation_index + new_oop_size;
         let mut oop_header = Header { header_value: 0 };
@@ -54,7 +54,7 @@ impl OopBuilder {
         }
 
         space[allocation_index] = oop_header.header_value;
-        return allocation_index;
+        allocation_index
     }
 
     pub fn set_number_of_slots(&mut self, new_number_of_slots: usize) {

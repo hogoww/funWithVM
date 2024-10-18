@@ -9,14 +9,11 @@ pub struct Oop {
 
 impl Oop {
     pub fn new(index: usize, contents: Vec<usize>) -> Self {
-        return Self {
-            index: index,
-            contents: contents,
-        };
+        Self { index, contents }
     }
 
     fn header_index(&self) -> usize {
-        return 0;
+        0
     }
 
     pub fn set_header(&mut self, header: Header) {
@@ -25,22 +22,22 @@ impl Oop {
     }
 
     pub fn get_header(&self) -> Header {
-        return Header {
+        Header {
             header_value: self.header_value(),
-        };
+        }
     }
 
     //shortcut
     pub fn header_value(&self) -> usize {
-        return self.contents[self.header_index()];
+        self.contents[self.header_index()]
     }
 
     pub fn get_index(&self) -> usize {
-        return self.index;
+        self.index
     }
 
     pub fn is_free_oop(&self) -> bool {
-        return self.get_header().class_index_bits() == SpecialClassIndexes::FreeObject as usize;
+        self.get_header().class_index_bits() == SpecialClassIndexes::FreeObject as usize
     }
 
     pub fn become_free_oop(&mut self, space: &mut MemorySpace) {
@@ -55,16 +52,16 @@ impl Oop {
         let mut index = self.index;
         for value in &self.contents {
             space[index] = *value;
-            index = index + 1;
+            index += 1;
         }
     }
 
     pub fn next_oop_index(&self) -> usize {
-        return self.index + self.get_header().oop_size();
+        self.index + self.get_header().oop_size()
     }
 
     pub fn next_oop(&self, space: &MemorySpace) -> Oop {
-        return space.get_oop_at(self.next_oop_index());
+        space.get_oop_at(self.next_oop_index())
     }
 
     // template <typename WORD_TYPE>
@@ -78,21 +75,22 @@ impl Oop {
     // }
 
     pub fn number_of_slots(&self) -> usize {
-        return self.get_header().number_of_slots_bits();
+        self.get_header().number_of_slots_bits()
     }
 
-    fn slot_bound_check(&self, an_index: usize) -> bool {
-        return an_index == 0 || an_index > self.number_of_slots();
+    fn slot_bound_check(&self, an_index: usize) {
+        if an_index < 1 || an_index > self.number_of_slots() {
+            panic!("slot access was out of bound")
+        }
     }
 
     pub fn slot_at_index(&self, an_index: usize) -> usize {
-        if self.slot_bound_check(an_index) { //exit(1);
-        }
-        return self.contents[an_index];
+        self.slot_bound_check(an_index);
+        self.contents[an_index]
     }
 
     pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize) {
-        if self.slot_bound_check(an_index) {} // exit(1);
+        self.slot_bound_check(an_index);
         let slot_index = self.header_index() + an_index;
         self.contents[slot_index] = an_oop_address;
     }

@@ -4,12 +4,12 @@ pub struct Header {
 
 impl Header {
     pub fn get_value(&self) -> usize {
-        return self.header_value;
+        self.header_value
     }
 
     // Multiple bits
     pub fn number_of_slots_bits(&self) -> usize {
-        return self.header_value & 0xFF;
+        self.header_value & 0xFF
     }
 
     pub fn set_number_of_slots_bits(&mut self, number_of_slots: usize) {
@@ -17,7 +17,7 @@ impl Header {
     }
 
     pub fn hash_bits(&self) -> usize {
-        return (self.header_value & 0xFFFFFC00) >> 10;
+        (self.header_value & 0xFFFFFC00) >> 10
     }
 
     pub fn set_hash_bits(&mut self, hash: usize) {
@@ -25,7 +25,7 @@ impl Header {
     }
 
     pub fn format_bits(&self) -> usize {
-        return (self.header_value & 0xFE00000000) >> 35;
+        (self.header_value & 0xFE00000000) >> 35
     }
 
     pub fn set_format_bits(&mut self, format: usize) {
@@ -33,7 +33,7 @@ impl Header {
     }
 
     pub fn class_index_bits(&self) -> usize {
-        return (self.header_value & 0xFFFFFC0000000000) >> 42;
+        (self.header_value & 0xFFFFFC0000000000) >> 42
     }
 
     pub fn set_class_index_bits(&mut self, class_index: usize) {
@@ -42,52 +42,52 @@ impl Header {
 
     // Individual Bits
     pub fn immutable_bit(&self) -> usize {
-        return (self.header_value & 0x10000000000) >> 40;
+        (self.header_value & 0x10000000000) >> 40
     }
 
     pub fn set_immutable_bit(&mut self) {
-        self.header_value = self.header_value | 0x10000000000;
+        self.header_value |= 0x10000000000;
     }
 
     pub fn marked_bit(&self) -> usize {
-        return (self.header_value & 0x1FF) >> 8;
+        (self.header_value & 0x1FF) >> 8
     }
 
     pub fn set_marked_bit(&mut self) {
-        self.header_value = self.header_value | 0x100;
+        self.header_value |= 0x100;
     }
 
     pub fn unset_marked_bit(&mut self) {
-        self.header_value = self.header_value & 0xFFFFFFFFFFFFFEFF;
+        self.header_value &= 0xFFFFFFFFFFFFFEFF;
     }
 
     pub fn pinned_bit(&self) -> usize {
-        return (self.header_value & 0x200000000) >> 33;
+        (self.header_value & 0x200000000) >> 33
     }
 
     pub fn set_pinned_bit(&mut self) {
-        self.header_value = self.header_value | 0x200000000;
+        self.header_value |= 0x200000000;
     }
 
     pub fn grey_bit(&self) -> usize {
-        return (self.header_value & 0x100000000) >> 32;
+        (self.header_value & 0x100000000) >> 32
     }
 
     pub fn set_grey_bit(&mut self) {
-        self.header_value = self.header_value | 0x100000000;
+        self.header_value |= 0x100000000;
     }
 
     pub fn remembered_bit(&self) -> usize {
-        return (self.header_value & 0x10000000000) >> 40;
+        (self.header_value & 0x10000000000) >> 40
     }
 
     pub fn set_remembered_bit(&mut self) {
-        self.header_value = self.header_value | 0x10000000000;
+        self.header_value |= 0x10000000000;
     }
 
     pub fn oop_size(&self) -> usize {
         //TODO(big_header)
-        return self.number_of_slots_bits() + 1; //header
+        self.number_of_slots_bits() + 1 //header
     }
 }
 

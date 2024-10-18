@@ -1,11 +1,13 @@
-mod garbage_collector {
+mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
     //use crate::oop::Oop;
 
+    #[allow(dead_code)]
     pub fn collect_from_roots(_roots: Vec<usize>, _space: &mut MemorySpace) {
         //todo !
     }
 
+    #[allow(dead_code)]
     pub fn mark_oops_from_roots(_roots: Vec<usize>, _space: &mut MemorySpace) {
         //todo !
     }
@@ -13,7 +15,7 @@ mod garbage_collector {
 
 #[cfg(test)]
 mod tests {
-    use crate::garbage_collector::garbage_collector;
+    use crate::garbage_collector::simple_garbage_collector;
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
 
@@ -25,7 +27,7 @@ mod tests {
         let mut roots: Vec<usize> = Vec::new();
         roots.push(builder.build(&mut space));
 
-        garbage_collector::mark_oops_from_roots(roots, &mut space);
+        simple_garbage_collector::mark_oops_from_roots(roots, &mut space);
 
         assert_eq!(space.first_oop().get_header().marked_bit(), 1);
     }
@@ -40,7 +42,7 @@ mod tests {
         builder.reset();
         space.first_oop().slot_at_put(1, builder.build(&mut space));
 
-        garbage_collector::mark_oops_from_roots(roots, &mut space);
+        simple_garbage_collector::mark_oops_from_roots(roots, &mut space);
 
         assert_eq!(
             space
@@ -59,7 +61,7 @@ mod tests {
         let mut roots: Vec<usize> = Vec::new();
         roots.push(builder.build(&mut space));
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert_eq!(space.first_oop().get_header().marked_bit(), 0);
     }
@@ -73,7 +75,7 @@ mod tests {
         builder.build(&mut space);
         roots.push(builder.build(&mut space));
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert!(space.first_oop().is_free_oop());
     }
@@ -85,7 +87,7 @@ mod tests {
         let mut roots: Vec<usize> = Vec::new();
         roots.push(builder.build(&mut space));
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert!(!space.first_oop().is_free_oop());
     }
@@ -100,7 +102,7 @@ mod tests {
         builder.reset();
         space.first_oop().slot_at_put(1, builder.build(&mut space));
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert!(!space.first_oop().next_oop(&mut space).is_free_oop());
     }
@@ -112,7 +114,7 @@ mod tests {
         let roots: Vec<usize> = Vec::new();
         builder.build(&mut space);
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert_eq!(space.first_oop().number_of_slots(), 239);
     }
@@ -127,7 +129,7 @@ mod tests {
         builder.build(&mut space);
         space.first_oop().become_free_oop(&mut space);
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert_eq!(space.first_oop().number_of_slots(), 238);
     }
@@ -140,7 +142,7 @@ mod tests {
         builder.build(&mut space);
         space.first_oop().become_free_oop(&mut space);
 
-        garbage_collector::collect_from_roots(roots, &mut space);
+        simple_garbage_collector::collect_from_roots(roots, &mut space);
 
         assert_eq!(space.first_oop().number_of_slots(), 238);
     }

@@ -17,17 +17,17 @@ impl MemorySpace {
         free_oop_header.set_number_of_slots_bits(memory_space_size - 1); // minus the header for the space
         memory_space[0] = free_oop_header.header_value;
 
-        return Self {
+        Self {
             memory_vector: memory_space,
-        };
+        }
     }
 
     pub fn get_start_index(&self) -> usize {
-        return 0;
+        0
     }
 
     pub fn get_end_index(&self) -> usize {
-        return self.memory_vector.capacity() - 1; // 0 based
+        self.memory_vector.capacity() - 1 // 0 based
     }
 
     // Beware, This doesn't check that the index hits an header
@@ -41,11 +41,11 @@ impl MemorySpace {
         };
         let mut oop_content: Vec<usize> = vec![0; header.oop_size()];
         oop_content.copy_from_slice(&self.memory_vector[index..index + header.oop_size()]);
-        return Oop::new(index, oop_content);
+        Oop::new(index, oop_content)
     }
 
     pub fn first_oop(&self) -> Oop {
-        return self.get_oop_at(0);
+        self.get_oop_at(0)
     }
 
     // pub fn setIndexToValue(&mut self, index: usize , value: usize){
@@ -63,7 +63,7 @@ impl Index<usize> for MemorySpace {
     type Output = usize;
 
     fn index(&self, index: usize) -> &Self::Output {
-        return &self.memory_vector[index];
+        &self.memory_vector[index]
     }
 }
 
@@ -71,7 +71,7 @@ use std::ops::IndexMut;
 
 impl IndexMut<usize> for MemorySpace {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        return &mut self.memory_vector[index];
+        &mut self.memory_vector[index]
     }
 }
 
