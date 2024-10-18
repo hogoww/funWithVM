@@ -1,7 +1,6 @@
 use crate::memory_space::MemorySpace;
 use crate::oop::Oop;
 
-//Remove this mutability...? this function doesn't need to mutate the memory space
 pub fn where_to_allocate(number_of_usize: usize, space: &MemorySpace) -> usize {
     let mut index: usize = space.get_start_index();
     let last_index = space.get_end_index();
@@ -137,7 +136,7 @@ mod tests {
                 .get_header()
                 .number_of_slots_bits(),
             237
-        ); // 2 == oop header + slot & 0 based
+        ); // 2 == oop (header + slot) & 0 based
     }
 
     #[test]
