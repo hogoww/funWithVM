@@ -32,11 +32,11 @@ impl MemorySpace {
 
     // Beware, This doesn't check that the index hits an header
     pub fn get_oop_at(&self, index: usize) -> Oop {
-		if index > self.get_end_index() {
-			panic!("oop at index {} is out of space bounds", index);
-		}
-		
-		let header = Header {
+        if index > self.get_end_index() {
+            panic!("oop at index {} is out of space bounds", index);
+        }
+
+        let header = Header {
             header_value: self[index],
         };
         let mut oop_content: Vec<usize> = vec![0; header.oop_size()];
@@ -45,7 +45,7 @@ impl MemorySpace {
     }
 
     pub fn first_oop(&self) -> Oop {
-		return self.get_oop_at(0);
+        return self.get_oop_at(0);
     }
 
     // pub fn setIndexToValue(&mut self, index: usize , value: usize){
@@ -75,21 +75,23 @@ impl IndexMut<usize> for MemorySpace {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-	use crate::memory_space::MemorySpace;
-	
-	#[test]
-	fn test_unfilled_space_first_oop_is_free(){
-        let space = MemorySpace::for_bit_size(240);
-		assert!(space.first_oop().is_free_oop());
-	}
+    use crate::memory_space::MemorySpace;
 
-	#[test]
-	fn test_unfilled_space_first_oop_is_the_only_oop_in_space(){
-		// The next index will be right after the end of the space
-		let space = MemorySpace::for_bit_size(240);
-		assert_eq!(space.first_oop().next_oop_index() - 1, space.get_end_index());
-	}
+    #[test]
+    fn test_unfilled_space_first_oop_is_free() {
+        let space = MemorySpace::for_bit_size(240);
+        assert!(space.first_oop().is_free_oop());
+    }
+
+    #[test]
+    fn test_unfilled_space_first_oop_is_the_only_oop_in_space() {
+        // The next index will be right after the end of the space
+        let space = MemorySpace::for_bit_size(240);
+        assert_eq!(
+            space.first_oop().next_oop_index() - 1,
+            space.get_end_index()
+        );
+    }
 }

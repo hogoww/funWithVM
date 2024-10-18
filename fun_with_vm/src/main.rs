@@ -1,14 +1,17 @@
 pub mod allocator;
-pub mod memory_space;
-use crate::memory_space::MemorySpace;
+pub mod garbage_collector;
 pub mod header;
-use crate::header::Header;
-
+pub mod memory_space;
 pub mod oop;
-//use crate::oop::Oop;
 pub mod oop_builder;
-use crate::oop_builder::OopBuilder;
 pub mod special_class_index;
+
+use crate::header::Header;
+use crate::memory_space::MemorySpace;
+
+//use crate::oop::Oop;
+
+use crate::oop_builder::OopBuilder;
 
 //pub mod header_format_values;
 
