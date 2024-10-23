@@ -5,7 +5,7 @@ mod simple_garbage_collector {
     #[allow(dead_code)]
     pub fn collect_from_roots(roots: Vec<usize>, space: &mut MemorySpace) {
         mark_oops_from_roots(roots, space);
-        //   this -> sweepOops();
+        sweep_oops(space);
         //   this -> mergeFreeOops();
     }
 
@@ -21,7 +21,8 @@ mod simple_garbage_collector {
                 an_oop.get_header().set_marked_bit();
                 an_oop.apply_header(space);
 
-                //TODO(slots)FLAG should NOT iterate over slots. This is the Oop responsibility
+                //TODO(slots)
+                // FLAG should NOT iterate over slots. This is the Oop responsibility
                 let number_of_slots: usize = an_oop.get_header().number_of_slots_bits();
                 for index in 1..=number_of_slots {
                     oop_to_mark.push(an_oop.slot_at_index(index));
@@ -30,36 +31,38 @@ mod simple_garbage_collector {
         }
     }
 
-    // template <typename WORD_TYPE>
-    // void GarbageCollector<WORD_TYPE>::sweepOops(){
-    //   Oop<WORD_TYPE> currentOop = memorySpace -> firstOop();
-    //   while ( currentOop.getAddress() < memorySpace -> getEndAddress() ){
-    //     if(currentOop.getHeader().markedBit()){
-    //       currentOop.getHeader().unsetMarkedBit();
-    //     }
-    //     else {
-    //       currentOop.becomeFreeOop();
-    //     }
+    pub fn sweep_oops(space: &mut MemorySpace) {
+        let mut current_oop = space.first_oop();
+        loop {
+            if current_oop.get_header().marked_bit() == 1 {
+                current_oop.get_header().unset_marked_bit();
+            } else {
+                current_oop.become_free_oop(space);
+            }
+            current_oop.apply_header(space);
 
-    //     currentOop = currentOop.nextOop();
-    //   }
-    // }
+            if current_oop.next_oop_index() < space.get_end_index() {
+                break;
+            }
+            current_oop = current_oop.next_oop(space);
+        }
+    }
 
     // template <typename WORD_TYPE>
     // void GarbageCollector<WORD_TYPE>::mergeFreeOops(){
     //   WORD_TYPE* endAddress = memorySpace -> getEndAddress();
-    //   Oop<WORD_TYPE> currentOop = memorySpace -> firstOop();
-    //   Oop<WORD_TYPE> nextOop = currentOop.nextOop();
+    //   Oop<WORD_TYPE> current_oop = memorySpace -> firstOop();
+    //   Oop<WORD_TYPE> nextOop = current_oop.nextOop();
 
-    //   while ( currentOop.getAddress() < endAddress ){
-    //     if(currentOop.isFreeOop() && nextOop.getAddress() < endAddress && nextOop.isFreeOop()){
+    //   while ( current_oop.getAddress() < endAddress ){
+    //     if(current_oop.isFreeOop() && nextOop.getAddress() < endAddress && nextOop.isFreeOop()){
     //       // + 1 because the header has the same size as a slot (at this time)
-    //       currentOop.getHeader().setNumberOfSlotsBits(currentOop.getHeader().numberOfSlotsBits() + nextOop.getHeader().numberOfSlotsBits() + 1);
+    //       current_oop.getHeader().setNumberOfSlotsBits(current_oop.getHeader().numberOfSlotsBits() + nextOop.getHeader().numberOfSlotsBits() + 1);
     //     }
     //     else {
-    //       currentOop = currentOop.nextOop();
+    //       current_oop = current_oop.nextOop();
     //     }
-    //     nextOop = currentOop.nextOop();
+    //     nextOop = current_oop.nextOop();
 
     //   }
     // }
