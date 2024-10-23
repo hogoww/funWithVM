@@ -1,16 +1,71 @@
 mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
-    //use crate::oop::Oop;
+	use crate::oop::Oop;
 
-    #[allow(dead_code)]
-    pub fn collect_from_roots(_roots: Vec<usize>, _space: &mut MemorySpace) {
-        //todo !
+	#[allow(dead_code)]
+    pub fn collect_from_roots(roots: Vec<usize>, space: &mut MemorySpace) {
+		mark_oops_from_roots(roots, space);
+		//   this -> sweepOops();
+		//   this -> mergeFreeOops();
     }
 
     #[allow(dead_code)]
-    pub fn mark_oops_from_roots(_roots: Vec<usize>, _space: &mut MemorySpace) {
-        //todo !
+    pub fn mark_oops_from_roots(roots: Vec<usize>, space: &mut MemorySpace) {
+		let mut oop_to_mark : Vec<usize> = roots.clone();
+		
+		while let Some(an_oop_index) = oop_to_mark.pop() {
+			let mut an_oop : Oop = space.get_oop_at(an_oop_index);
+			if an_oop.get_header().marked_bit() != 1 {
+				//println!("Marking {}", an_oop_index);
+				
+				an_oop.get_header().set_marked_bit();
+				an_oop.apply_header(space);
+
+				//TODO(slots)FLAG should NOT iterate over slots. This is the Oop responsibility
+				let number_of_slots : usize = an_oop.get_header().number_of_slots_bits();
+				for index in 1..=number_of_slots {
+ 					oop_to_mark.push(an_oop.slot_at_index(index));
+
+				}
+			}
+		}
     }
+
+
+// template <typename WORD_TYPE>
+// void GarbageCollector<WORD_TYPE>::sweepOops(){
+//   Oop<WORD_TYPE> currentOop = memorySpace -> firstOop();
+//   while ( currentOop.getAddress() < memorySpace -> getEndAddress() ){
+//     if(currentOop.getHeader().markedBit()){
+//       currentOop.getHeader().unsetMarkedBit();
+//     }
+//     else {
+//       currentOop.becomeFreeOop();
+//     }
+    
+//     currentOop = currentOop.nextOop();
+//   }
+// }
+
+
+// template <typename WORD_TYPE>
+// void GarbageCollector<WORD_TYPE>::mergeFreeOops(){
+//   WORD_TYPE* endAddress = memorySpace -> getEndAddress();
+//   Oop<WORD_TYPE> currentOop = memorySpace -> firstOop();
+//   Oop<WORD_TYPE> nextOop = currentOop.nextOop();
+    
+//   while ( currentOop.getAddress() < endAddress ){
+//     if(currentOop.isFreeOop() && nextOop.getAddress() < endAddress && nextOop.isFreeOop()){
+//       // + 1 because the header has the same size as a slot (at this time)
+//       currentOop.getHeader().setNumberOfSlotsBits(currentOop.getHeader().numberOfSlotsBits() + nextOop.getHeader().numberOfSlotsBits() + 1);
+//     }
+//     else {
+//       currentOop = currentOop.nextOop();
+//     }
+//     nextOop = currentOop.nextOop();
+      
+//   }
+// }
 }
 
 #[cfg(test)]
@@ -28,7 +83,7 @@ mod tests {
         roots.push(builder.build(&mut space));
 
         simple_garbage_collector::mark_oops_from_roots(roots, &mut space);
-
+		
         assert_eq!(space.first_oop().get_header().marked_bit(), 1);
     }
 
@@ -40,7 +95,9 @@ mod tests {
         builder.set_number_of_slots(1);
         roots.push(builder.build(&mut space));
         builder.reset();
-        space.first_oop().slot_at_put(1, builder.build(&mut space));
+		let mut first_oop = space.first_oop();
+        first_oop.slot_at_put(1, builder.build(&mut space));
+		first_oop.apply_to_space(&mut space);
 
         simple_garbage_collector::mark_oops_from_roots(roots, &mut space);
 

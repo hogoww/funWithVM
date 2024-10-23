@@ -2,6 +2,7 @@ use crate::header::Header;
 use crate::oop::Oop;
 use crate::special_class_index::SpecialClassIndexes;
 
+#[derive(Debug)]
 pub struct MemorySpace {
     memory_vector: Vec<usize>,
 }
