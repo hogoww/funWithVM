@@ -5,24 +5,30 @@ use crate::special_class_index::SpecialClassIndexes;
 #[derive(Debug)]
 pub struct Oop {
     index: usize,
-	header: Header,
+    header: Header,
     contents: Vec<usize>,
 }
 
 impl Oop {
     pub fn new(index: usize, contents: Vec<usize>) -> Self {
-		let header = Header { header_value: contents[0] };
-        Self { index, contents, header }
+        let header = Header {
+            header_value: contents[0],
+        };
+        Self {
+            index,
+            contents,
+            header,
+        }
     }
 
     fn header_index(&self) -> usize {
         0
     }
 
-	pub fn get_header(&mut self) -> &mut Header {
-		&mut self.header
+    pub fn get_header(&mut self) -> &mut Header {
+        &mut self.header
     }
-	
+
     // pub fn set_header(&mut self, header: Header) {
     //     let index: usize = self.header_index();
     //     self.contents[index] = header.get_value();
@@ -42,22 +48,23 @@ impl Oop {
     }
 
     pub fn become_free_oop(&mut self, space: &mut MemorySpace) {
-        self.header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
-		self.apply_header(space);
+        self.header
+            .set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
+        self.apply_header(space);
     }
 
-	pub fn apply_to_space(&mut self, space: &mut MemorySpace) {
-		self.apply_header(space);
-		self.apply_slots(space);
-	}
-	
-	pub fn apply_header(&mut self, space: &mut MemorySpace) {
-		let header_index = self.header_index();
-		self.contents[header_index] = self.header.header_value;
-		space[self.index] = self.header.header_value;
-	}
+    pub fn apply_to_space(&mut self, space: &mut MemorySpace) {
+        self.apply_header(space);
+        self.apply_slots(space);
+    }
 
-    pub fn apply_slots(& self, space: &mut MemorySpace) {
+    pub fn apply_header(&mut self, space: &mut MemorySpace) {
+        let header_index = self.header_index();
+        self.contents[header_index] = self.header.header_value;
+        space[self.index] = self.header.header_value;
+    }
+
+    pub fn apply_slots(&self, space: &mut MemorySpace) {
         let mut index = self.index;
         for value in &self.contents {
             space[index] = *value;
@@ -66,7 +73,7 @@ impl Oop {
     }
 
     pub fn next_oop_index(&self) -> usize {
-		self.index + self.header.oop_size()
+        self.index + self.header.oop_size()
     }
 
     pub fn next_oop(&self, space: &MemorySpace) -> Oop {

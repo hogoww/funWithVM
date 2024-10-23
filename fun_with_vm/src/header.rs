@@ -86,15 +86,14 @@ impl Header {
         self.header_value |= 0x10000000000;
     }
 
-	pub fn unset_remembered_bit(&mut self) {
-		self.header_value &= 0xFFFFFEFFFFFFFFFF;
+    pub fn unset_remembered_bit(&mut self) {
+        self.header_value &= 0xFFFFFEFFFFFFFFFF;
     }
 
     pub fn oop_size(&self) -> usize {
         //TODO(big_header)
         self.number_of_slots_bits() + 1 //header
     }
-
 }
 
 #[cfg(test)]
@@ -318,7 +317,6 @@ mod tests {
         assert_eq!(header.number_of_slots_bits(), 42);
     }
 
-	
     #[test]
     fn test_unset_remembered_bit_after_number_of_slots_keeps_slots() {
         let mut header = Header { header_value: 0 };
@@ -326,7 +324,7 @@ mod tests {
         header.unset_remembered_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
     }
-	
+
     #[test]
     fn test_set_marked_bit_after_number_of_slots_keeps_slots() {
         let mut header = Header { header_value: 0 };
@@ -335,7 +333,6 @@ mod tests {
         assert_eq!(header.number_of_slots_bits(), 42);
     }
 
-	
     #[test]
     fn test_unset_marked_bit_after_number_of_slots_keeps_slots() {
         let mut header = Header { header_value: 0 };
@@ -343,7 +340,7 @@ mod tests {
         header.unset_marked_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
     }
-	
+
     #[test]
     fn test_set_class_index_after_number_of_slots_keeps_slots() {
         let mut header = Header { header_value: 0 };
