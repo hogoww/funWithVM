@@ -63,10 +63,10 @@ mod simple_garbage_collector {
                 current_oop
                     .get_header()
                     .set_number_of_slots_bits(new_number_of_slots);
+                current_oop.apply_header(space);
             } else {
                 current_oop = current_oop.next_oop(space);
             }
-            current_oop.apply_header(space);
 
             if current_oop.next_oop_index() > space.get_end_index() {
                 break;

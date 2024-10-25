@@ -10,6 +10,7 @@ pub struct Oop {
 }
 
 impl Oop {
+    // Constructor
     pub fn new(index: usize, contents: Vec<usize>) -> Self {
         let header = Header {
             header_value: contents[0],
@@ -21,18 +22,15 @@ impl Oop {
         }
     }
 
+    // Constant
     fn header_index(&self) -> usize {
         0
     }
 
+    // Accessors
     pub fn get_header(&mut self) -> &mut Header {
         &mut self.header
     }
-
-    // pub fn set_header(&mut self, header: Header) {
-    //     let index: usize = self.header_index();
-    //     self.contents[index] = header.get_value();
-    // }
 
     //shortcut
     pub fn header_value(&self) -> usize {
@@ -53,6 +51,7 @@ impl Oop {
         self.apply_header(space);
     }
 
+    // Apply on space
     pub fn apply_to_space(&mut self, space: &mut MemorySpace) {
         self.apply_header(space);
         self.apply_slots(space);
@@ -72,6 +71,7 @@ impl Oop {
         }
     }
 
+    // Moving in space
     pub fn next_oop_index(&self) -> usize {
         self.index + self.header.oop_size()
     }
@@ -80,16 +80,7 @@ impl Oop {
         space.get_oop_at(self.next_oop_index())
     }
 
-    // template <typename WORD_TYPE>
-    // WORD_TYPE Oop<WORD_TYPE>::bitSize(){
-    //   return this -> header.bitSize();
-    // }
-
-    // template <typename WORD_TYPE>
-    // WORD_TYPE Oop<WORD_TYPE>::wordSize(){
-    //   return this -> header.wordSize();
-    // }
-
+    // Slots manipulation
     pub fn number_of_slots(&self) -> usize {
         self.header.number_of_slots_bits()
     }
