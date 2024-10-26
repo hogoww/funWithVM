@@ -4,6 +4,7 @@ pub mod header;
 pub mod memory_space;
 pub mod oop;
 pub mod oop_builder;
+pub mod slot_content;
 pub mod special_class_index;
 
 use crate::header::Header;

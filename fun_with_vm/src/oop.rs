@@ -9,6 +9,16 @@ pub struct Oop {
     contents: Vec<usize>,
 }
 
+// todo(immediate)
+pub fn is_slot_immediate(_slot_value: usize) -> bool {
+    return false;
+}
+
+// todo(immediate)
+pub fn is_slot_oop(_slot_value: usize) -> bool {
+    return true;
+}
+
 impl Oop {
     // Constructor
     pub fn new(index: usize, contents: Vec<usize>) -> Self {
@@ -41,6 +51,7 @@ impl Oop {
         self.index
     }
 
+    // Testing
     pub fn is_free_oop(&self) -> bool {
         self.header.class_index_bits() == SpecialClassIndexes::FreeObject as usize
     }
