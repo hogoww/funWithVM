@@ -1,4 +1,5 @@
 use crate::header::Header;
+use crate::memory_space_iterator::MemorySpaceIterator;
 use crate::oop::Oop;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -45,8 +46,16 @@ impl MemorySpace {
         Oop::new(index, oop_content)
     }
 
+    pub fn iter(&mut self) -> MemorySpaceIterator {
+        MemorySpaceIterator::new(self)
+    }
+
     pub fn first_oop(&self) -> Oop {
         self.get_oop_at(0)
+    }
+
+    pub fn memory_slice(&self, start_index: usize, end_index: usize) -> &[usize] {
+        &self.memory_vector[start_index..end_index]
     }
 
     // pub fn setIndexToValue(&mut self, index: usize , value: usize){

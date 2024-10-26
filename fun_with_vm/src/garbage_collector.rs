@@ -35,19 +35,14 @@ mod simple_garbage_collector {
     }
 
     pub fn sweep_oops(space: &mut MemorySpace) {
-        let mut current_oop = space.first_oop();
-        loop {
+        let mut iter = space.iter();
+        while let Some(mut current_oop) = iter.next() {
             if current_oop.get_header().marked_bit() == 1 {
                 current_oop.get_header().unset_marked_bit();
             } else {
                 current_oop.become_free_oop(space);
             }
-            current_oop.apply_header(space);
-
-            if current_oop.next_oop_index() > space.get_end_index() {
-                break;
-            }
-            current_oop = current_oop.next_oop(space);
+            //current_oop.apply_header(space);
         }
     }
 
