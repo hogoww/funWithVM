@@ -1,27 +1,18 @@
 use crate::header::Header;
-use crate::memory_space::MemorySpace;
+//use crate::memory_space::MemorySpace;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
-pub struct Oop {
+pub struct Oop<'a> {
     index: usize,
     header: Header,
-    contents: Vec<usize>,
+    contents: &'a mut [usize],
 }
 
-// todo(immediate)
-pub fn is_slot_immediate(_slot_value: usize) -> bool {
-    return false;
-}
 
-// todo(immediate)
-pub fn is_slot_oop(_slot_value: usize) -> bool {
-    return true;
-}
-
-impl Oop {
+impl<'a> Oop<'a> {
     // Constructor
-    pub fn new(index: usize, contents: Vec<usize>) -> Self {
+    pub fn new(index: usize, contents: &'a mut [usize]) -> Self {
         let header = Header {
             header_value: contents[0],
         };
@@ -56,40 +47,38 @@ impl Oop {
         self.header.class_index_bits() == SpecialClassIndexes::FreeObject as usize
     }
 
-    pub fn become_free_oop(&mut self, space: &mut MemorySpace) {
-        self.header
-            .set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
-        self.apply_header(space);
+    pub fn become_free_oop(&mut self) {
+        self.header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
+        self.apply_header();
     }
 
     // Apply on space
-    pub fn apply_to_space(&mut self, space: &mut MemorySpace) {
-        self.apply_header(space);
-        self.apply_slots(space);
+    pub fn apply_to_space(&mut self) {
+        self.apply_header();
+        //self.apply_slots();
     }
 
-    pub fn apply_header(&mut self, space: &mut MemorySpace) {
+    pub fn apply_header(&mut self) {
         let header_index = self.header_index();
         self.contents[header_index] = self.header.header_value;
-        space[self.index] = self.header.header_value;
     }
 
-    pub fn apply_slots(&self, space: &mut MemorySpace) {
-        let mut index = self.index;
-        for value in &self.contents {
-            space[index] = *value;
-            index += 1;
-        }
-    }
+    //pub fn apply_slots(&self) {
+      //  let mut index = self.index;
+        // for value in self.contents {
+    //         self.contents[index] = *value;
+    //         index += 1;
+    //     }
+    // }
 
     // Moving in space
     pub fn next_oop_index(&self) -> usize {
         self.index + self.header.oop_size()
     }
 
-    pub fn next_oop(&self, space: &MemorySpace) -> Oop {
-        space.get_oop_at(self.next_oop_index())
-    }
+    // pub fn next_oop(&mut self, space: &mut MemorySpace) -> Oop {
+    //     space.get_oop_at(self.next_oop_index())
+    // }
 
     // Slots manipulation
     pub fn number_of_slots(&self) -> usize {
@@ -127,7 +116,7 @@ mod tests {
         let oop_index = builder.build(&mut space);
         let mut new_object = space.get_oop_at(oop_index);
 
-        new_object.become_free_oop(&mut space);
+        new_object.become_free_oop();
         assert!(new_object.is_free_oop());
     }
 
