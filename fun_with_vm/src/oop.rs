@@ -1,6 +1,5 @@
 use crate::header::Header;
-//use crate::memory_space::MemorySpace;
-use crate::special_class_index::SpecialClassIndexes;
+use crate::memory_space::MemorySpace;
 
 #[derive(Debug)]
 pub struct Oop<'a> {
@@ -8,7 +7,6 @@ pub struct Oop<'a> {
     header: Header,
     contents: &'a mut [usize],
 }
-
 
 impl<'a> Oop<'a> {
     // Constructor
@@ -44,11 +42,11 @@ impl<'a> Oop<'a> {
 
     // Testing
     pub fn is_free_oop(&self) -> bool {
-        self.header.class_index_bits() == SpecialClassIndexes::FreeObject as usize
+        self.header.is_free_oop()
     }
 
     pub fn become_free_oop(&mut self) {
-        self.header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
+        self.header.become_free_oop();
         self.apply_header();
     }
 
@@ -64,8 +62,8 @@ impl<'a> Oop<'a> {
     }
 
     //pub fn apply_slots(&self) {
-      //  let mut index = self.index;
-        // for value in self.contents {
+    //  let mut index = self.index;
+    // for value in self.contents {
     //         self.contents[index] = *value;
     //         index += 1;
     //     }
@@ -76,9 +74,9 @@ impl<'a> Oop<'a> {
         self.index + self.header.oop_size()
     }
 
-    // pub fn next_oop(&mut self, space: &mut MemorySpace) -> Oop {
-    //     space.get_oop_at(self.next_oop_index())
-    // }
+    pub fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> Oop<'b> {
+        space.get_oop_at(self.next_oop_index())
+    }
 
     // Slots manipulation
     pub fn number_of_slots(&self) -> usize {

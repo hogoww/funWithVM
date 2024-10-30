@@ -1,3 +1,5 @@
+use crate::special_class_index::SpecialClassIndexes;
+
 #[derive(Debug)]
 pub struct Header {
     pub header_value: usize,
@@ -88,6 +90,13 @@ impl Header {
 
     pub fn unset_remembered_bit(&mut self) {
         self.header_value &= 0xFFFFFEFFFFFFFFFF;
+    }
+
+    pub fn is_free_oop(&self) -> bool {
+        self.class_index_bits() == SpecialClassIndexes::FreeObject as usize
+    }
+    pub fn become_free_oop(&mut self) {
+        self.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
     }
 
     pub fn oop_size(&self) -> usize {

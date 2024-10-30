@@ -41,12 +41,15 @@ impl MemorySpace {
         let header = Header {
             header_value: self[index],
         };
-      	
-        Oop::new(index, &mut self.memory_vector[index..index + header.oop_size()])
+
+        Oop::new(
+            index,
+            &mut self.memory_vector[index..index + header.oop_size()],
+        )
     }
 
-    pub fn iter(&mut self) -> MemorySpaceIterator {
-        MemorySpaceIterator::new(self)
+    pub fn iter(&self) -> MemorySpaceIterator {
+        MemorySpaceIterator::new()
     }
 
     pub fn first_oop(&mut self) -> Oop {
@@ -84,23 +87,23 @@ impl IndexMut<usize> for MemorySpace {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use crate::memory_space::MemorySpace;
+#[cfg(test)]
+mod tests {
+    use crate::memory_space::MemorySpace;
 
-//     #[test]
-//     fn test_unfilled_space_first_oop_is_free() {
-//         let space = MemorySpace::for_bit_size(240);
-//         assert!(space.first_oop().is_free_oop());
-//     }
+    #[test]
+    fn test_unfilled_space_first_oop_is_free() {
+        let mut space = MemorySpace::for_bit_size(240);
+        assert!(space.first_oop().is_free_oop());
+    }
 
-//     #[test]
-//     fn test_unfilled_space_first_oop_is_the_only_oop_in_space() {
-//         // The next index will be right after the end of the space
-//         let space = MemorySpace::for_bit_size(240);
-//         assert_eq!(
-//             space.first_oop().next_oop_index() - 1,
-//             space.get_end_index()
-//         );
-//     }
-// }
+    #[test]
+    fn test_unfilled_space_first_oop_is_the_only_oop_in_space() {
+        // The next index will be right after the end of the space
+        let mut space = MemorySpace::for_bit_size(240);
+        assert_eq!(
+            space.first_oop().next_oop_index() - 1,
+            space.get_end_index()
+        );
+    }
+}
