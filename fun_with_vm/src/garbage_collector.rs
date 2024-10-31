@@ -8,7 +8,7 @@ mod simple_garbage_collector {
     pub fn collect_from_roots(roots: Vec<usize>, space: &mut MemorySpace) {
         mark_oops_from_roots(roots, space);
         sweep_oops(space);
-        // merge_free_oops(space);
+        merge_free_oops(space);
     }
 
     pub fn mark_oops_from_roots(roots: Vec<usize>, space: &mut MemorySpace) {
@@ -47,35 +47,33 @@ mod simple_garbage_collector {
         }
     }
 
-    // pub fn merge_free_oops(space: &mut MemorySpace) {
-    // 	let last_index = space.get_end_index();
-    //     let mut current_oop = space.first_oop();
-    //     if current_oop.next_oop_index() > last_index {
-    //         panic!("GC with only one oop in space !");
-    //     }
-    //     let mut next_oop = space.first_oop().next_oop(space);
-
-    //     loop {
-    //         if current_oop.is_free_oop()
-    //             && (next_oop.get_index() < space.get_end_index() && next_oop.is_free_oop())
-    //         {
-    //             // Merged oops only need one header !
-    //             let new_number_of_slots = current_oop.get_header().number_of_slots_bits()
-    //                 + next_oop.get_header().oop_size();
-    //             current_oop
-    //                 .get_header()
-    //                 .set_number_of_slots_bits(new_number_of_slots);
-    // 			current_oop.apply_header();
-    //         } else {
-    //             current_oop = current_oop.next_oop(space);
-    //         }
-
-    //         if current_oop.next_oop_index() > last_index {
-    //             break;
-    //         }
-    //         next_oop = current_oop.next_oop(space);
-    //     }
-    // }
+    pub fn merge_free_oops(space: &mut MemorySpace) {
+        let last_index = space.get_end_index();
+        let mut current_oop_index = space.get_start_index();
+        let mut current_oop_header = Header {
+            header_value: space[current_oop_index],
+        };
+        let mut next_oop_index = current_oop_index + current_oop_header.oop_size();
+        let mut next_oop_header;
+        while next_oop_index < last_index {
+            next_oop_header = Header {
+                header_value: space[next_oop_index],
+            };
+            if current_oop_header.is_free_oop() && next_oop_header.is_free_oop() {
+                // Merged oops only need one header !
+                let new_number_of_slots =
+                    current_oop_header.number_of_slots_bits() + next_oop_header.oop_size();
+                current_oop_header.set_number_of_slots_bits(new_number_of_slots);
+                space[current_oop_index] = current_oop_header.header_value;
+            } else {
+                current_oop_index = next_oop_index;
+                current_oop_header = Header {
+                    header_value: space[current_oop_index],
+                };
+            }
+            next_oop_index = current_oop_index + current_oop_header.oop_size();
+        }
+    }
 
     // pub fn merge_free_oops(space: &mut MemorySpace) {
     //     let mut iter = space.iter();
@@ -211,34 +209,34 @@ mod tests {
         }
     }
 
-    // mod merging_tests {
-    // 	use super::*;
+    mod merging_tests {
+        use super::*;
 
-    // 	#[test]
-    // 	fn test_garbage_collection_compacts_free_oop_reclaimed_after_a_free_oop() {
-    // 		let mut space = MemorySpace::for_bit_size(240);
-    // 		let builder = OopBuilder::new();
-    // 		let roots: Vec<usize> = Vec::new();
-    // 		builder.build(&mut space);
-    // 		builder.build(&mut space);
-    // 		space.first_oop().become_free_oop(&mut space);
+        #[test]
+        fn test_garbage_collection_compacts_free_oop_reclaimed_after_a_free_oop() {
+            let mut space = MemorySpace::for_bit_size(240);
+            let builder = OopBuilder::new();
+            let roots: Vec<usize> = Vec::new();
+            builder.build(&mut space);
+            builder.build(&mut space);
+            space.first_oop().become_free_oop();
 
-    // 		simple_garbage_collector::collect_from_roots(roots, &mut space);
+            simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-    //         assert_eq!(space.first_oop().number_of_slots(), 239);
-    //     }
+            assert_eq!(space.first_oop().number_of_slots(), 239);
+        }
 
-    //     #[test]
-    //     fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop() {
-    //         let mut space = MemorySpace::for_bit_size(240);
-    //         let builder = OopBuilder::new();
-    //         let roots: Vec<usize> = Vec::new();
-    //         builder.build(&mut space);
-    //         space.first_oop().become_free_oop(&mut space);
+        #[test]
+        fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop() {
+            let mut space = MemorySpace::for_bit_size(240);
+            let builder = OopBuilder::new();
+            let roots: Vec<usize> = Vec::new();
+            builder.build(&mut space);
+            space.first_oop().become_free_oop();
 
-    //         simple_garbage_collector::collect_from_roots(roots, &mut space);
+            simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-    //         assert_eq!(space.first_oop().number_of_slots(), 239);
-    //     }
-    // }
+            assert_eq!(space.first_oop().number_of_slots(), 239);
+        }
+    }
 }
