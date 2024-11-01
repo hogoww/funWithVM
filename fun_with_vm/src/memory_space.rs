@@ -1,6 +1,6 @@
 use crate::header::Header;
-use crate::memory_space_access::MemorySpaceIterator;
 use crate::memory_space_access::memory_space_access;
+use crate::memory_space_access::MemorySpaceIterator;
 use crate::oop::Oop;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -34,12 +34,12 @@ impl MemorySpace {
     }
 
     pub fn first_oop(&mut self) -> Oop {
-		memory_space_access::first_oop(self)
+        memory_space_access::first_oop(self)
     }
 
     pub fn get_oop_at(&mut self, index: usize) -> Oop {
-		memory_space_access::oop_at_index(index, self)
-	}
+        memory_space_access::oop_at_index(index, self)
+    }
 
     pub fn iter(&self) -> MemorySpaceIterator {
         MemorySpaceIterator::new()
