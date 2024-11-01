@@ -1,5 +1,6 @@
 use crate::header::Header;
-use crate::memory_space_iterator::MemorySpaceIterator;
+use crate::memory_space_access::MemorySpaceIterator;
+use crate::memory_space_access::memory_space_access;
 use crate::oop::Oop;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -32,28 +33,16 @@ impl MemorySpace {
         self.memory_vector.capacity() - 1 // 0 based
     }
 
-    // Beware, This doesn't check that the index hits an header
-    pub fn get_oop_at(&mut self, index: usize) -> Oop {
-        if index > self.get_end_index() {
-            panic!("oop at index {} is out of space bounds", index);
-        }
-
-        let header = Header {
-            header_value: self[index],
-        };
-
-        Oop::new(
-            index,
-            &mut self.memory_vector[index..index + header.oop_size()],
-        )
+    pub fn first_oop(&mut self) -> Oop {
+		memory_space_access::first_oop(self)
     }
+
+    pub fn get_oop_at(&mut self, index: usize) -> Oop {
+		memory_space_access::oop_at_index(index, self)
+	}
 
     pub fn iter(&self) -> MemorySpaceIterator {
         MemorySpaceIterator::new()
-    }
-
-    pub fn first_oop(&mut self) -> Oop {
-        self.get_oop_at(0)
     }
 
     pub fn report(&self) {

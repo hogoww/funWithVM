@@ -2,7 +2,7 @@ pub mod allocator;
 pub mod garbage_collector;
 pub mod header;
 pub mod memory_space;
-pub mod memory_space_iterator;
+pub mod memory_space_access;
 pub mod oop;
 pub mod oop_builder;
 pub mod slot_content;
