@@ -21,9 +21,10 @@ impl MemorySpaceIterator {
         };
         let oop_size = header.oop_size();
 
-        let oop_content = space.memory_slice(self.current_index, self.current_index + oop_size);
-
-        let res: Oop = Oop::new(self.current_index, oop_content);
+        let res: Oop = Oop::new(
+            self.current_index,
+            &mut space[self.current_index..self.current_index + oop_size],
+        );
         self.current_index = res.next_oop_index();
         Some(res)
     }

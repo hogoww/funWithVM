@@ -56,33 +56,27 @@ impl MemorySpace {
         self.get_oop_at(0)
     }
 
-    pub fn memory_slice(&mut self, start_index: usize, end_index: usize) -> &mut [usize] {
-        &mut self.memory_vector[start_index..end_index]
-    }
-
-    // pub fn setIndexToValue(&mut self, index: usize , value: usize){
-    // 	self.memory_vector[index] = value
-    // }
-
     pub fn report(&self) {
         println!("memory_vector = {}", self.memory_vector.len());
     }
 }
 
-use std::ops::Index;
+impl<Idx> std::ops::Index<Idx> for MemorySpace
+where
+    Idx: std::slice::SliceIndex<[usize]>,
+{
+    type Output = Idx::Output;
 
-impl Index<usize> for MemorySpace {
-    type Output = usize;
-
-    fn index(&self, index: usize) -> &Self::Output {
+    fn index(&self, index: Idx) -> &Self::Output {
         &self.memory_vector[index]
     }
 }
 
-use std::ops::IndexMut;
-
-impl IndexMut<usize> for MemorySpace {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+impl<Idx> std::ops::IndexMut<Idx> for MemorySpace
+where
+    Idx: std::slice::SliceIndex<[usize]>,
+{
+    fn index_mut(&mut self, index: Idx) -> &mut Self::Output {
         &mut self.memory_vector[index]
     }
 }
