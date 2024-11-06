@@ -21,12 +21,12 @@ impl SlotContent {
     // Testing
     // todo(immediate)
     pub fn is_slot_immediate(&self) -> bool {
-        return false;
+        false
     }
 
     // todo(immediate)
     pub fn is_slot_oop(&self) -> bool {
-        return true;
+        true
     }
 
     // todo conversions;

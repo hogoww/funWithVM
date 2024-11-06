@@ -74,23 +74,6 @@ mod simple_garbage_collector {
             next_oop_index = current_oop_index + current_oop_header.oop_size();
         }
     }
-
-    // pub fn merge_free_oops(space: &mut MemorySpace) {
-    //     let mut iter = space.iter();
-    //     while let Some(mut current_oop) = iter.next(space) {
-    // 		let next_oop_index = current_oop.next_oop_index();
-    // 		let next_oop_header_value = space[next_oop_index];
-    // 		let next_oop_header = Header { header_value: next_oop_header_value };
-    // 		if current_oop.is_free_oop() && next_oop_header.is_free_oop() {
-    // 			// Merged oops only need one header !
-    // 			let new_number_of_slots = current_oop.get_header().number_of_slots_bits() + next_oop_header.oop_size();
-    // 			current_oop
-    // 				.get_header()
-    // 				.set_number_of_slots_bits(new_number_of_slots);
-    // 			current_oop.apply_header();
-    // 		}
-    // 	}
-    // }
 }
 
 #[cfg(test)]

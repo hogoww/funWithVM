@@ -42,7 +42,7 @@ impl MemorySpace {
     }
 
     pub fn iter(&self) -> MemorySpaceIterator {
-        MemorySpaceIterator::new()
+        MemorySpaceIterator::default()
     }
 
     pub fn report(&self) {

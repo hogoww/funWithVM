@@ -21,9 +21,16 @@ impl MemorySpaceIterator {
     }
 }
 
+impl Default for MemorySpaceIterator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub mod memory_space_access {
     use super::*;
-    pub fn oop_at_index<'a>(index: usize, space: &'a mut MemorySpace) -> Oop<'a> {
+
+    pub fn oop_at_index(index: usize, space: &mut MemorySpace) -> Oop {
         let header = Header {
             header_value: space[index],
         };
@@ -32,7 +39,7 @@ pub mod memory_space_access {
         Oop::new(index, &mut space[index..index + oop_size])
     }
 
-    pub fn first_oop<'a>(space: &'a mut MemorySpace) -> Oop<'a> {
+    pub fn first_oop(space: &mut MemorySpace) -> Oop {
         oop_at_index(0, space)
     }
 }
