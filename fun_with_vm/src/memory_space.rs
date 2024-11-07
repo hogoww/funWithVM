@@ -14,7 +14,7 @@ impl MemorySpace {
         let mut memory_space: Vec<usize> = vec![0; memory_space_size];
 
         // set first oop to be free & have all the slots in the space
-        let mut free_oop_header = Header { header_value: 0 };
+        let mut free_oop_header = Header::new();
         free_oop_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
         //TODO support spaces biggers than 256*sizeof(usize).
         free_oop_header.set_number_of_slots_bits(memory_space_size - 1); // minus the header for the space

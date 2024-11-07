@@ -6,6 +6,10 @@ pub struct Header {
 }
 
 impl Header {
+    pub fn new() -> Self {
+        Self { header_value: 0 }
+    }
+
     pub fn get_value(&self) -> usize {
         self.header_value
     }
@@ -114,9 +118,22 @@ impl Header {
         self.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
     }
 
+    pub fn header_size(&self) -> usize {
+        if self.has_extra_slot_header() {
+            2
+        } else {
+            1
+        }
+    }
+
     pub fn oop_size(&self) -> usize {
-        //TODO(big_header)
-        self.number_of_slots_bits() + 1 //header
+        self.number_of_slots_bits() + self.header_size()
+    }
+}
+
+impl Default for Header {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -269,7 +286,7 @@ mod tests {
     #[test]
     fn test_set_class_index() {
         let class_index: usize = 4;
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_class_index_bits(class_index);
         assert_eq!(header.class_index_bits(), class_index);
     }
@@ -277,14 +294,14 @@ mod tests {
     #[test]
     fn test_set_format() {
         let format: usize = 4;
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_format_bits(format);
         assert_eq!(header.format_bits(), format);
     }
 
     #[test]
     fn test_set_grey_bit() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_grey_bit();
         assert_eq!(header.grey_bit(), 1);
     }
@@ -292,21 +309,21 @@ mod tests {
     #[test]
     fn test_set_hash() {
         let hash: usize = 549;
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_hash_bits(hash);
         assert_eq!(header.hash_bits(), hash);
     }
 
     #[test]
     fn test_set_immutable_bit() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_immutable_bit();
         assert_eq!(header.immutable_bit(), 1);
     }
 
     #[test]
     fn test_set_marked_bit() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_marked_bit();
         assert_eq!(header.marked_bit(), 1);
     }
@@ -314,28 +331,28 @@ mod tests {
     #[test]
     fn test_set_number_of_slots() {
         let number_of_slots: usize = 5;
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(number_of_slots);
         assert_eq!(header.number_of_slots_bits(), number_of_slots);
     }
 
     #[test]
     fn test_set_pinned_bit() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_pinned_bit();
         assert_eq!(header.pinned_bit(), 1);
     }
 
     #[test]
     fn test_set_remembered_bit() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_remembered_bit();
         assert_eq!(header.remembered_bit(), 1);
     }
 
     #[test]
     fn test_set_remembered_bit_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.set_remembered_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -343,7 +360,7 @@ mod tests {
 
     #[test]
     fn test_unset_remembered_bit_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.unset_remembered_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -351,7 +368,7 @@ mod tests {
 
     #[test]
     fn test_set_marked_bit_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.set_marked_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -359,7 +376,7 @@ mod tests {
 
     #[test]
     fn test_unset_marked_bit_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.unset_marked_bit();
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -367,7 +384,7 @@ mod tests {
 
     #[test]
     fn test_set_class_index_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.set_class_index_bits(3);
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -375,7 +392,7 @@ mod tests {
 
     #[test]
     fn test_set_format_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.set_format_bits(3);
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -383,7 +400,7 @@ mod tests {
 
     #[test]
     fn test_set_hash_after_number_of_slots_keeps_slots() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         header.set_hash_bits(3);
         assert_eq!(header.number_of_slots_bits(), 42);
@@ -391,9 +408,16 @@ mod tests {
 
     #[test]
     fn test_set_number_of_slots_after_hash_keep_hash() {
-        let mut header = Header { header_value: 0 };
+        let mut header = Header::new();
         header.set_hash_bits(3);
         header.set_number_of_slots_bits(42);
         assert_eq!(header.number_of_slots_bits(), 42);
+    }
+
+    #[test]
+    fn test_small_oop_does_not_have_extra_header() {
+        let mut header = Header::new();
+        header.set_number_of_slots_bits(42);
+        assert!(!header.has_extra_slot_header());
     }
 }
