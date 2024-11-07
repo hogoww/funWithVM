@@ -15,6 +15,7 @@ impl MemorySpaceIterator {
         if self.current_index > space.get_end_index() {
             return None;
         }
+
         let res = oop_at_index(self.current_index, space);
         self.current_index = res.next_oop_index();
         Some(res)
@@ -34,9 +35,8 @@ pub mod memory_space_access {
         let header = Header {
             header_value: space[index],
         };
-        let oop_size = header.oop_size();
-
-        Oop::new(index, &mut space[index..index + oop_size])
+        // TODO(big objects)
+        Oop::new(index, &mut space[index..index + header.oop_size()])
     }
 
     pub fn first_oop(space: &mut MemorySpace) -> Oop {

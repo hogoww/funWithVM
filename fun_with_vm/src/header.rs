@@ -10,6 +10,10 @@ impl Header {
         self.header_value
     }
 
+    // Constants
+    pub const MAX_NUMBER_OF_SLOTS: usize = 254;
+    const EXTRA_SLOT_HEADER: usize = 0xFF;
+
     // Multiple bits
     pub fn number_of_slots_bits(&self) -> usize {
         self.header_value & 0xFF
@@ -17,6 +21,10 @@ impl Header {
 
     pub fn set_number_of_slots_bits(&mut self, number_of_slots: usize) {
         self.header_value = (self.header_value & 0xFFFFFFFFFFFFFF00) | number_of_slots;
+    }
+
+    pub fn set_number_of_slots_to_max(&mut self) {
+        self.header_value &= Header::EXTRA_SLOT_HEADER
     }
 
     pub fn hash_bits(&self) -> usize {
@@ -92,9 +100,16 @@ impl Header {
         self.header_value &= 0xFFFFFEFFFFFFFFFF;
     }
 
+    // testing
+    pub fn has_extra_slot_header(&self) -> bool {
+        self.number_of_slots_bits() > Header::MAX_NUMBER_OF_SLOTS
+    }
+
     pub fn is_free_oop(&self) -> bool {
         self.class_index_bits() == SpecialClassIndexes::FreeObject as usize
     }
+
+    // reclaiming
     pub fn become_free_oop(&mut self) {
         self.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
     }

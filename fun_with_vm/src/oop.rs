@@ -21,23 +21,26 @@ impl<'a> Oop<'a> {
         }
     }
 
-    // Constant
-    fn header_index(&self) -> usize {
-        0
-    }
+    // Constants
+    const HEADER_INDEX: usize = 0;
+    pub const EXTRA_HEADER_INDEX: usize = 1;
 
     // Accessors
     pub fn get_header(&mut self) -> &mut Header {
         &mut self.header
     }
 
-    //shortcut
-    pub fn header_value(&self) -> usize {
-        self.contents[self.header_index()]
-    }
-
     pub fn get_index(&self) -> usize {
         self.index
+    }
+
+    //shortcut
+    pub fn header_value(&self) -> usize {
+        self.contents[Oop::HEADER_INDEX]
+    }
+
+    pub fn oop_size(&self) -> usize {
+        self.header.oop_size()
     }
 
     // Testing
@@ -57,8 +60,7 @@ impl<'a> Oop<'a> {
     }
 
     pub fn apply_header(&mut self) {
-        let header_index = self.header_index();
-        self.contents[header_index] = self.header.header_value;
+        self.contents[Oop::HEADER_INDEX] = self.header.header_value;
     }
 
     //pub fn apply_slots(&self) {
@@ -80,7 +82,11 @@ impl<'a> Oop<'a> {
 
     // Slots manipulation
     pub fn number_of_slots(&self) -> usize {
-        self.header.number_of_slots_bits()
+        if self.header.has_extra_slot_header() {
+            self.contents[Oop::EXTRA_HEADER_INDEX] >> 8
+        } else {
+            self.header.number_of_slots_bits()
+        }
     }
 
     fn slot_bound_check(&self, an_index: usize) {
@@ -96,7 +102,7 @@ impl<'a> Oop<'a> {
 
     pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize) {
         self.slot_bound_check(an_index);
-        let slot_index = self.header_index() + an_index;
+        let slot_index = Oop::HEADER_INDEX + an_index;
         self.contents[slot_index] = an_oop_address;
     }
 }

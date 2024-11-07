@@ -3,7 +3,7 @@ use crate::memory_space::MemorySpace;
 pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usize {
     let mut iter = space.iter();
     while let Some(oop) = iter.next(space) {
-        if oop.is_free_oop() && oop.number_of_slots() >= number_of_usize {
+        if oop.is_free_oop() && oop.oop_size() >= number_of_usize {
             // We found a free index with enough space !
             return oop.get_index();
         }
@@ -11,8 +11,8 @@ pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usi
     //We didn't find a proper place in memory to put that many usize
 
     // Should probably say we need a GC.
-    // Thrown an eror in the meantime.
-    std::process::exit(1);
+    // Throw an error in the meantime.
+    panic!("Couldn't allocate {} slots", number_of_usize);
 }
 
 #[cfg(test)]
@@ -37,6 +37,7 @@ mod tests {
         builder.build(&mut space);
         space.first_oop().become_free_oop();
         let new_object = builder.build(&mut space);
+
         assert_eq!(new_object, space.get_start_index());
     }
 
@@ -46,11 +47,7 @@ mod tests {
         let mut builder = OopBuilder::new();
         builder.set_number_of_slots(239);
         builder.build(&mut space);
-        println!(
-            "{}, {}",
-            space.first_oop().next_oop_index(),
-            space.get_end_index()
-        );
+
         assert!(space.first_oop().next_oop_index() > space.get_end_index());
     }
 
