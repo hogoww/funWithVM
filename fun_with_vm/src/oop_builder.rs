@@ -32,15 +32,12 @@ impl OopBuilder {
     }
 
     pub fn build(&self, space: &mut MemorySpace) -> usize {
-        let mut oop_header = Header { header_value: 0 };
+        let mut oop_header = Header::new();
 
-        let extra_header: usize;
         if self.number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
             oop_header.set_number_of_slots_to_max();
-            extra_header = self.number_of_slots;
         } else {
             oop_header.set_number_of_slots_bits(self.number_of_slots);
-            extra_header = 0;
         }
 
         let allocated_index: usize = where_to_allocate(oop_header.oop_size(), space);
@@ -61,10 +58,10 @@ impl OopBuilder {
 
         oop_header.set_class_index_bits(self.class_index);
         space[allocated_index] = oop_header.header_value;
-        if extra_header != 0 {
-            space[allocated_index + Oop::EXTRA_HEADER_INDEX] = extra_header;
-            std::process::exit(1);
+        if oop_header.has_extra_slot_header() {
+            space[allocated_index + Oop::EXTRA_HEADER_INDEX] = self.number_of_slots;
         }
+
         allocated_index
     }
 
