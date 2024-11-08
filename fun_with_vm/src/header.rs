@@ -24,11 +24,14 @@ impl Header {
     }
 
     pub fn set_number_of_slots_bits(&mut self, number_of_slots: usize) {
+        if number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
+            panic!("Tried to set number of slots {} directly in the header. Headers only support {} slots", number_of_slots , Header::MAX_NUMBER_OF_SLOTS)
+        }
         self.header_value = (self.header_value & 0xFFFFFFFFFFFFFF00) | number_of_slots;
     }
 
     pub fn set_number_of_slots_to_max(&mut self) {
-        self.header_value &= Header::EXTRA_SLOT_HEADER
+        self.header_value = (self.header_value & 0xFFFFFFFFFFFFFF00) | Header::EXTRA_SLOT_HEADER;
     }
 
     pub fn hash_bits(&self) -> usize {
@@ -124,10 +127,6 @@ impl Header {
         } else {
             1
         }
-    }
-
-    pub fn oop_size(&self) -> usize {
-        self.number_of_slots_bits() + self.header_size()
     }
 }
 
@@ -419,5 +418,12 @@ mod tests {
         let mut header = Header::new();
         header.set_number_of_slots_bits(42);
         assert!(!header.has_extra_slot_header());
+    }
+
+    #[test]
+    fn test_big_oop_has_extra_header() {
+        let mut header = Header::new();
+        header.set_number_of_slots_to_max();
+        assert!(header.has_extra_slot_header());
     }
 }

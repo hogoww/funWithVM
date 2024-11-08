@@ -39,8 +39,14 @@ impl<'a> Oop<'a> {
         self.contents[Oop::HEADER_INDEX]
     }
 
+    //Unfortunately, repeated code with memory_space
     pub fn oop_size(&self) -> usize {
-        self.header.oop_size()
+        self.header.header_size()
+            + if self.header.has_extra_slot_header() {
+                self.contents[Oop::HEADER_INDEX]
+            } else {
+                self.header.number_of_slots_bits()
+            }
     }
 
     // Testing
@@ -73,7 +79,7 @@ impl<'a> Oop<'a> {
 
     // Moving in space
     pub fn next_oop_index(&self) -> usize {
-        self.index + self.header.oop_size()
+        self.index + self.oop_size()
     }
 
     pub fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> Oop<'b> {

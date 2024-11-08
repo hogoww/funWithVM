@@ -40,20 +40,32 @@ impl OopBuilder {
             oop_header.set_number_of_slots_bits(self.number_of_slots);
         }
 
-        let allocated_index: usize = where_to_allocate(oop_header.oop_size(), space);
+        let allocated_index: usize =
+            where_to_allocate(oop_header.header_size() + self.number_of_slots, space);
 
         let mut free_header = Header {
             header_value: space[allocated_index],
         };
 
-        if free_header.oop_size() != oop_header.oop_size() {
+        let free_oop_size = space.oop_size_at(allocated_index);
+        let new_oop_size = oop_header.header_size() + self.number_of_slots;
+
+        if free_oop_size != new_oop_size {
             //TODO(big oop)
-            let new_free_number_of_slots = free_header.oop_size() - oop_header.oop_size() - 1; // minus header
+            let new_free_number_of_slots = free_oop_size - new_oop_size - free_header.header_size();
+            if new_free_number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
+                free_header.set_number_of_slots_to_max();
+            } else {
+                free_header.set_number_of_slots_bits(self.number_of_slots);
+            }
             free_header.set_number_of_slots_bits(new_free_number_of_slots);
 
             free_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
-            let new_free_oop_index: usize = allocated_index + oop_header.oop_size();
+            let new_free_oop_index: usize = allocated_index + new_oop_size;
             space[new_free_oop_index] = free_header.header_value;
+            if free_header.has_extra_slot_header() {
+                space[new_free_oop_index + Oop::EXTRA_HEADER_INDEX] = self.number_of_slots;
+            }
         }
 
         oop_header.set_class_index_bits(self.class_index);

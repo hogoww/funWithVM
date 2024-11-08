@@ -53,8 +53,9 @@ mod simple_garbage_collector {
         let mut current_oop_header = Header {
             header_value: space[current_oop_index],
         };
-        let mut next_oop_index = current_oop_index + current_oop_header.oop_size();
+        let mut next_oop_index = current_oop_index + space.oop_size_at(current_oop_index);
         let mut next_oop_header;
+        //TODO(big oop)
         while next_oop_index < last_index {
             next_oop_header = Header {
                 header_value: space[next_oop_index],
@@ -62,7 +63,7 @@ mod simple_garbage_collector {
             if current_oop_header.is_free_oop() && next_oop_header.is_free_oop() {
                 // Merged oops only need one header !
                 let new_number_of_slots =
-                    current_oop_header.number_of_slots_bits() + next_oop_header.oop_size();
+                    current_oop_header.number_of_slots_bits() + space.oop_size_at(next_oop_index);
                 current_oop_header.set_number_of_slots_bits(new_number_of_slots);
                 space[current_oop_index] = current_oop_header.header_value;
             } else {
@@ -71,7 +72,7 @@ mod simple_garbage_collector {
                     header_value: space[current_oop_index],
                 };
             }
-            next_oop_index = current_oop_index + current_oop_header.oop_size();
+            next_oop_index = current_oop_index + space.oop_size_at(current_oop_index);
         }
     }
 }
