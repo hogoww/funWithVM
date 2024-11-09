@@ -1,7 +1,7 @@
 use crate::header::Header;
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
-use crate::oop::*;
+use crate::oop::OopWithContents;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
@@ -92,7 +92,8 @@ where
 #[cfg(test)]
 mod tests {
     use crate::memory_space::MemorySpace;
-    use crate::oop::*;
+    //use crate::oop::OopWithContents;
+    use crate::oop_common::OopCommonState;
 
     #[test]
     fn test_unfilled_space_first_oop_is_free() {

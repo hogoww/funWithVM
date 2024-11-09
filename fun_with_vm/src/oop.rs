@@ -1,5 +1,6 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
+use crate::oop_common::OopCommonState;
 
 #[derive(Debug)]
 pub struct OopWithContents<'a> {
@@ -13,45 +14,6 @@ pub struct OopHeaders {
     index: usize,
     header: Header,
     extra_header: usize,
-}
-
-pub trait OopCommonState {
-    fn get_index(&self) -> usize;
-    fn get_header(&mut self) -> &mut Header;
-    fn get_header_const(&self) -> &Header;
-    fn get_extra_header(&self) -> usize;
-
-    fn is_free_oop(&self) -> bool {
-        self.get_header_const().is_free_oop()
-    }
-
-    fn header_value(&self) -> usize {
-        self.get_header_const().header_value
-    }
-
-    //TODO(oop_size) try to extract this in its own trait
-    //Unfortunately, repeated code with memory_space
-    fn oop_size(&self) -> usize {
-        self.get_header_const().header_size() + self.number_of_slots()
-    }
-
-    // Slots manipulation
-    fn number_of_slots(&self) -> usize {
-        if self.get_extra_header() != 0 {
-            self.get_extra_header()
-        } else {
-            self.get_header_const().number_of_slots_bits()
-        }
-    }
-
-    // Moving in space
-    fn next_oop_index(&self) -> usize {
-        self.get_index() + self.oop_size()
-    }
-
-    fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> OopWithContents<'b> {
-        space.get_oop_at(self.next_oop_index())
-    }
 }
 
 impl OopCommonState for OopHeaders {
@@ -85,21 +47,6 @@ impl OopHeaders {
             header,
             extra_header,
         }
-    }
-}
-
-impl OopCommonState for OopWithContents<'_> {
-    fn get_index(&self) -> usize {
-        self.index
-    }
-    fn get_header(&mut self) -> &mut Header {
-        &mut self.header
-    }
-    fn get_header_const(&self) -> &Header {
-        &self.header
-    }
-    fn get_extra_header(&self) -> usize {
-        self.extra_header
     }
 }
 
@@ -155,6 +102,21 @@ impl<'a> OopWithContents<'a> {
         self.slot_bound_check(an_index);
         let slot_index = an_index;
         self.contents[slot_index] = an_oop_address;
+    }
+}
+
+impl OopCommonState for OopWithContents<'_> {
+    fn get_index(&self) -> usize {
+        self.index
+    }
+    fn get_header(&mut self) -> &mut Header {
+        &mut self.header
+    }
+    fn get_header_const(&self) -> &Header {
+        &self.header
+    }
+    fn get_extra_header(&self) -> usize {
+        self.extra_header
     }
 }
 

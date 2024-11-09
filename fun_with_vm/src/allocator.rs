@@ -1,5 +1,6 @@
 use crate::memory_space::MemorySpace;
-use crate::oop::*;
+//use crate::oop::*;
+use crate::oop_common::*;
 
 pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usize {
     let mut iter = space.iter();
