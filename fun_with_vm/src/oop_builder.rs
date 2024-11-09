@@ -1,7 +1,7 @@
 use crate::allocator::where_to_allocate;
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop::Oop;
+//use crate::oop::*;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Default)]
@@ -64,14 +64,14 @@ impl OopBuilder {
             let new_free_oop_index: usize = allocated_index + new_oop_size;
             space[new_free_oop_index] = free_header.header_value;
             if free_header.has_extra_slot_header() {
-                space[new_free_oop_index + Oop::EXTRA_HEADER_INDEX] = self.number_of_slots;
+                space[new_free_oop_index + 1] = self.number_of_slots;
             }
         }
 
         oop_header.set_class_index_bits(self.class_index);
         space[allocated_index] = oop_header.header_value;
         if oop_header.has_extra_slot_header() {
-            space[allocated_index + Oop::EXTRA_HEADER_INDEX] = self.number_of_slots;
+            space[allocated_index + 1] = self.number_of_slots;
         }
 
         allocated_index

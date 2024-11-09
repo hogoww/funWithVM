@@ -10,7 +10,6 @@ pub mod special_class_index;
 
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-
 //use crate::oop::Oop;
 
 use crate::oop_builder::OopBuilder;

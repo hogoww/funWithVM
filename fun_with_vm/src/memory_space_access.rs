@@ -1,6 +1,6 @@
 use crate::memory_space::MemorySpace;
 use crate::memory_space_access::memory_space_access::*;
-use crate::oop::Oop;
+use crate::oop::*;
 
 pub struct MemorySpaceIterator {
     current_index: usize,
@@ -11,7 +11,7 @@ impl MemorySpaceIterator {
         Self { current_index: 0 }
     }
 
-    pub fn next<'a>(&mut self, space: &'a mut MemorySpace) -> Option<Oop<'a>> {
+    pub fn next<'a>(&mut self, space: &'a mut MemorySpace) -> Option<OopWithContents<'a>> {
         if self.current_index > space.get_end_index() {
             return None;
         }
@@ -31,12 +31,12 @@ impl Default for MemorySpaceIterator {
 pub mod memory_space_access {
     use super::*;
 
-    pub fn oop_at_index(index: usize, space: &mut MemorySpace) -> Oop {
+    pub fn oop_at_index(index: usize, space: &mut MemorySpace) -> OopWithContents {
         let oop_size = space.oop_size_at(index);
-        Oop::new(index, &mut space[index..index + oop_size])
+        OopWithContents::new(index, &mut space[index..index + oop_size])
     }
 
-    pub fn first_oop(space: &mut MemorySpace) -> Oop {
+    pub fn first_oop(space: &mut MemorySpace) -> OopWithContents {
         oop_at_index(0, space)
     }
 }

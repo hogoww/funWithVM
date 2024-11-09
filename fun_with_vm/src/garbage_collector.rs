@@ -1,7 +1,8 @@
 mod simple_garbage_collector {
     use crate::header::Header;
     use crate::memory_space::MemorySpace;
-    use crate::oop::Oop;
+    use crate::oop::OopCommonState;
+    use crate::oop::*;
     use crate::slot_content::SlotContent;
 
     #[allow(dead_code)]
@@ -15,7 +16,7 @@ mod simple_garbage_collector {
         let mut oop_to_mark: Vec<usize> = roots.clone();
 
         while let Some(an_oop_index) = oop_to_mark.pop() {
-            let mut an_oop: Oop = space.get_oop_at(an_oop_index);
+            let mut an_oop: OopWithContents = space.get_oop_at(an_oop_index);
             if an_oop.get_header().marked_bit() != 1 {
                 //println!("Marking {}", an_oop_index);
 
@@ -81,6 +82,7 @@ mod simple_garbage_collector {
 mod tests {
     use crate::garbage_collector::simple_garbage_collector;
     use crate::memory_space::MemorySpace;
+    use crate::oop::*;
     use crate::oop_builder::OopBuilder;
 
     mod mark_tests {

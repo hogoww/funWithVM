@@ -1,4 +1,5 @@
 use crate::memory_space::MemorySpace;
+use crate::oop::*;
 
 pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usize {
     let mut iter = space.iter();
@@ -17,7 +18,7 @@ pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usi
 
 #[cfg(test)]
 mod tests {
-    use crate::memory_space::MemorySpace;
+    use super::*;
     use crate::oop_builder::OopBuilder;
 
     #[test]

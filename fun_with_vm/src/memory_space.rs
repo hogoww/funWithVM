@@ -1,7 +1,7 @@
 use crate::header::Header;
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
-use crate::oop::Oop;
+use crate::oop::*;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
@@ -52,11 +52,11 @@ impl MemorySpace {
         header.header_size() + self.oop_number_of_slots_at(index)
     }
 
-    pub fn first_oop(&mut self) -> Oop {
+    pub fn first_oop(&mut self) -> OopWithContents {
         memory_space_access::first_oop(self)
     }
 
-    pub fn get_oop_at(&mut self, index: usize) -> Oop {
+    pub fn get_oop_at(&mut self, index: usize) -> OopWithContents {
         memory_space_access::oop_at_index(index, self)
     }
 
@@ -92,6 +92,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::memory_space::MemorySpace;
+    use crate::oop::*;
 
     #[test]
     fn test_unfilled_space_first_oop_is_free() {
