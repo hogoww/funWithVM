@@ -1,7 +1,7 @@
 use crate::header::Header;
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
-use crate::oop::OopWithContents;
+use crate::oop_with_contents::OopWithContents;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
@@ -105,6 +105,16 @@ mod tests {
     fn test_unfilled_space_first_oop_is_the_only_oop_in_space() {
         // The next index will be right after the end of the space
         let mut space = MemorySpace::for_bit_size(240);
+        assert_eq!(
+            space.first_oop().next_oop_index() - 1,
+            space.get_end_index()
+        );
+    }
+
+    #[test]
+    fn test_bigger_space_allocate() {
+        // The next index will be right after the end of the space
+        let mut space = MemorySpace::for_bit_size(1000);
         assert_eq!(
             space.first_oop().next_oop_index() - 1,
             space.get_end_index()

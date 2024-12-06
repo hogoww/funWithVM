@@ -1,7 +1,14 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop::OopWithContents;
+use crate::oop_with_contents::OopWithContents;
 
+
+pub mod oop_constants {
+	pub const HEADER_INDEX: usize = 0;
+	pub const EXTRA_HEADER_INDEX: usize = 1;
+	pub const NO_EXTRA_HEADER_VALUE: usize = 0;
+}
+	
 pub trait OopCommonState {
     fn get_index(&self) -> usize;
     fn get_header(&self) -> &Header;

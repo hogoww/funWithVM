@@ -1,7 +1,7 @@
 mod simple_garbage_collector {
     use crate::header::Header;
     use crate::memory_space::MemorySpace;
-    use crate::oop::OopWithContents;
+    use crate::oop_with_contents::OopWithContents;
     use crate::oop_common::*;
     use crate::slot_content::SlotContent;
 

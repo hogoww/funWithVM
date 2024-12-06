@@ -1,6 +1,6 @@
 use crate::memory_space::MemorySpace;
 use crate::memory_space_access::memory_space_access::*;
-use crate::oop::*;
+use crate::oop_with_contents::OopWithContents;
 use crate::oop_common::OopCommonState;
 
 pub struct MemorySpaceIterator {

@@ -3,9 +3,10 @@ pub mod garbage_collector;
 pub mod header;
 pub mod memory_space;
 pub mod memory_space_access;
-pub mod oop;
-pub mod oop_builder;
 pub mod oop_common;
+pub mod oop_with_contents;
+pub mod oop_headers;
+pub mod oop_builder;
 pub mod slot_content;
 pub mod special_class_index;
 
