@@ -1,7 +1,8 @@
 use crate::memory_space::MemorySpace;
 use crate::memory_space_access::memory_space_access::*;
-use crate::oop_with_contents::OopWithContents;
 use crate::oop_common::OopCommonState;
+use crate::oop_headers::OopHeaders;
+use crate::oop_with_contents::OopWithContents;
 
 pub struct MemorySpaceIterator {
     current_index: usize,
@@ -33,7 +34,7 @@ pub mod memory_space_access {
     use super::*;
 
     pub fn oop_at_index(index: usize, space: &mut MemorySpace) -> OopWithContents {
-        let oop_size = space.oop_size_at(index);
+        let oop_size = OopHeaders::new(index, space).oop_size();
         OopWithContents::new(index, &mut space[index..index + oop_size])
     }
 

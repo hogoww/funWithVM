@@ -23,8 +23,6 @@ pub trait OopCommonState {
         self.get_header().header_value
     }
 
-    //TODO(oop_size) try to extract this in its own trait
-    //Unfortunately, repeated code with memory_space
     fn oop_size(&self) -> usize {
         self.get_header().header_size() + self.number_of_slots()
     }

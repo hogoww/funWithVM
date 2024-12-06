@@ -33,25 +33,6 @@ impl MemorySpace {
         self.memory_vector.capacity() - 1 // 0 based
     }
 
-    //Unfortunately, repeated code with oop
-    pub fn oop_number_of_slots_at(&self, index: usize) -> usize {
-        let header = Header {
-            header_value: self[index],
-        };
-        if header.has_extra_slot_header() {
-            self[index + 1]
-        } else {
-            header.number_of_slots_bits()
-        }
-    }
-
-    pub fn oop_size_at(&self, index: usize) -> usize {
-        let header = Header {
-            header_value: self[index],
-        };
-        header.header_size() + self.oop_number_of_slots_at(index)
-    }
-
     pub fn first_oop(&mut self) -> OopWithContents {
         memory_space_access::first_oop(self)
     }
