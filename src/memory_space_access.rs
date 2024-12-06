@@ -1,6 +1,6 @@
 use crate::memory_space::MemorySpace;
 use crate::memory_space_access::memory_space_access::*;
-use crate::oop_common::{ OopCommonState, OopNavigation };
+use crate::oop_common::{OopCommonState, OopNavigation};
 use crate::oop_headers::OopHeaders;
 use crate::oop_with_contents::OopWithContents;
 

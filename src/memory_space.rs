@@ -74,7 +74,7 @@ where
 mod tests {
     use crate::memory_space::MemorySpace;
     use crate::oop_common::OopCommonState;
-	use crate::oop_common::OopNavigation;
+    use crate::oop_common::OopNavigation;
 
     #[test]
     fn test_unfilled_space_first_oop_is_free() {

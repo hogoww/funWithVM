@@ -1,6 +1,6 @@
 use crate::header::Header;
 use crate::oop_common::oop_constants;
-use crate::oop_common::{ OopCommonState, OopNavigation };
+use crate::oop_common::{OopCommonState, OopNavigation};
 
 #[derive(Debug)]
 pub struct OopWithContents<'a> {
@@ -89,9 +89,9 @@ impl<'a> OopWithContents<'a> {
 #[cfg(test)]
 mod tests {
     use crate::memory_space::MemorySpace;
-    use crate::oop_with_contents::OopWithContents;
-	use crate::oop_common::OopCommonState;
     use crate::oop_builder::OopBuilder;
+    use crate::oop_common::OopCommonState;
+    use crate::oop_with_contents::OopWithContents;
 
     #[test]
     fn become_free_oop_is_free_oop() {

@@ -1,9 +1,9 @@
 mod simple_garbage_collector {
     use crate::header::Header;
     use crate::memory_space::MemorySpace;
-    use crate::oop_with_contents::OopWithContents;
     use crate::oop_common::*;
-	use crate::oop_headers::OopHeaders;
+    use crate::oop_headers::OopHeaders;
+    use crate::oop_with_contents::OopWithContents;
     use crate::slot_content::SlotContent;
 
     #[allow(dead_code)]
@@ -55,7 +55,8 @@ mod simple_garbage_collector {
         let mut current_oop_header = Header {
             header_value: space[current_oop_index],
         };
-        let mut next_oop_index = current_oop_index + OopHeaders::new(current_oop_index, space).oop_size();
+        let mut next_oop_index =
+            current_oop_index + OopHeaders::new(current_oop_index, space).oop_size();
         let mut next_oop_header;
         //TODO(big oop)
         while next_oop_index < last_index {
@@ -64,8 +65,8 @@ mod simple_garbage_collector {
             };
             if current_oop_header.is_free_oop() && next_oop_header.is_free_oop() {
                 // Merged oops only need one header !
-                let new_number_of_slots =
-                    current_oop_header.number_of_slots_bits() + OopHeaders::new(next_oop_index, space).oop_size();
+                let new_number_of_slots = current_oop_header.number_of_slots_bits()
+                    + OopHeaders::new(next_oop_index, space).oop_size();
                 current_oop_header.set_number_of_slots_bits(new_number_of_slots);
                 space[current_oop_index] = current_oop_header.header_value;
             } else {
@@ -74,7 +75,8 @@ mod simple_garbage_collector {
                     header_value: space[current_oop_index],
                 };
             }
-            next_oop_index = current_oop_index + OopHeaders::new(current_oop_index, space).oop_size();
+            next_oop_index =
+                current_oop_index + OopHeaders::new(current_oop_index, space).oop_size();
         }
     }
 }
