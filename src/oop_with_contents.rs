@@ -1,6 +1,6 @@
 use crate::header::Header;
 use crate::oop_common::oop_constants;
-use crate::oop_common::OopCommonState;
+use crate::oop_common::{ OopCommonState, OopNavigation };
 
 #[derive(Debug)]
 pub struct OopWithContents<'a> {
@@ -11,9 +11,6 @@ pub struct OopWithContents<'a> {
 }
 
 impl OopCommonState for OopWithContents<'_> {
-    fn get_index(&self) -> usize {
-        self.index
-    }
     fn get_header(&self) -> &Header {
         &self.header
     }
@@ -22,6 +19,12 @@ impl OopCommonState for OopWithContents<'_> {
     }
     fn get_extra_header(&self) -> usize {
         self.extra_header
+    }
+}
+
+impl OopNavigation for OopWithContents<'_> {
+    fn get_index(&self) -> usize {
+        self.index
     }
 }
 

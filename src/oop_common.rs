@@ -2,15 +2,13 @@ use crate::header::Header;
 use crate::memory_space::MemorySpace;
 use crate::oop_with_contents::OopWithContents;
 
-
 pub mod oop_constants {
-	pub const HEADER_INDEX: usize = 0;
-	pub const EXTRA_HEADER_INDEX: usize = 1;
-	pub const NO_EXTRA_HEADER_VALUE: usize = 0;
+    pub const HEADER_INDEX: usize = 0;
+    pub const EXTRA_HEADER_INDEX: usize = 1;
+    pub const NO_EXTRA_HEADER_VALUE: usize = 0;
 }
-	
+
 pub trait OopCommonState {
-    fn get_index(&self) -> usize;
     fn get_header(&self) -> &Header;
     fn get_header_mut(&mut self) -> &mut Header;
     fn get_extra_header(&self) -> usize;
@@ -35,8 +33,11 @@ pub trait OopCommonState {
             self.get_header().number_of_slots_bits()
         }
     }
+}
 
-    // Moving in space
+pub trait OopNavigation: OopCommonState {
+    fn get_index(&self) -> usize;
+
     fn next_oop_index(&self) -> usize {
         self.get_index() + self.oop_size()
     }
