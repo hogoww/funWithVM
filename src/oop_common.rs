@@ -4,22 +4,22 @@ use crate::oop::OopWithContents;
 
 pub trait OopCommonState {
     fn get_index(&self) -> usize;
-    fn get_header(&mut self) -> &mut Header;
-    fn get_header_const(&self) -> &Header;
+    fn get_header(&self) -> &Header;
+    fn get_header_mut(&mut self) -> &mut Header;
     fn get_extra_header(&self) -> usize;
 
     fn is_free_oop(&self) -> bool {
-        self.get_header_const().is_free_oop()
+        self.get_header().is_free_oop()
     }
 
     fn header_value(&self) -> usize {
-        self.get_header_const().header_value
+        self.get_header().header_value
     }
 
     //TODO(oop_size) try to extract this in its own trait
     //Unfortunately, repeated code with memory_space
     fn oop_size(&self) -> usize {
-        self.get_header_const().header_size() + self.number_of_slots()
+        self.get_header().header_size() + self.number_of_slots()
     }
 
     // Slots manipulation
@@ -27,7 +27,7 @@ pub trait OopCommonState {
         if self.get_extra_header() != 0 {
             self.get_extra_header()
         } else {
-            self.get_header_const().number_of_slots_bits()
+            self.get_header().number_of_slots_bits()
         }
     }
 

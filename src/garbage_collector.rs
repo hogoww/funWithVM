@@ -20,7 +20,7 @@ mod simple_garbage_collector {
             if an_oop.get_header().marked_bit() != 1 {
                 //println!("Marking {}", an_oop_index);
 
-                an_oop.get_header().set_marked_bit();
+                an_oop.get_header_mut().set_marked_bit();
                 an_oop.apply_header();
 
                 //TODO(slots)
@@ -40,7 +40,7 @@ mod simple_garbage_collector {
         let mut iter = space.iter();
         while let Some(mut current_oop) = iter.next(space) {
             if current_oop.get_header().marked_bit() == 1 {
-                current_oop.get_header().unset_marked_bit();
+                current_oop.get_header_mut().unset_marked_bit();
             } else {
                 current_oop.become_free_oop();
             }

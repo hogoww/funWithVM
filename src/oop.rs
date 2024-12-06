@@ -10,6 +10,7 @@ pub struct OopWithContents<'a> {
     contents: &'a mut [usize],
 }
 
+#[derive(Debug)]
 pub struct OopHeaders {
     index: usize,
     header: Header,
@@ -20,11 +21,11 @@ impl OopCommonState for OopHeaders {
     fn get_index(&self) -> usize {
         self.index
     }
-    fn get_header(&mut self) -> &mut Header {
-        &mut self.header
-    }
-    fn get_header_const(&self) -> &Header {
+    fn get_header(&self) -> &Header {
         &self.header
+    }
+    fn get_header_mut(&mut self) -> &mut Header {
+        &mut self.header
     }
     fn get_extra_header(&self) -> usize {
         self.extra_header
@@ -74,7 +75,7 @@ impl<'a> OopWithContents<'a> {
     pub const EXTRA_HEADER_INDEX: usize = 1;
 
     pub fn become_free_oop(&mut self) {
-        self.get_header().become_free_oop();
+        self.get_header_mut().become_free_oop();
         self.apply_header();
     }
 
@@ -109,11 +110,11 @@ impl OopCommonState for OopWithContents<'_> {
     fn get_index(&self) -> usize {
         self.index
     }
-    fn get_header(&mut self) -> &mut Header {
-        &mut self.header
-    }
-    fn get_header_const(&self) -> &Header {
+    fn get_header(&self) -> &Header {
         &self.header
+    }
+    fn get_header_mut(&mut self) -> &mut Header {
+        &mut self.header
     }
     fn get_extra_header(&self) -> usize {
         self.extra_header
