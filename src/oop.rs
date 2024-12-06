@@ -2,12 +2,32 @@ use crate::header::Header;
 use crate::memory_space::MemorySpace;
 use crate::oop_common::OopCommonState;
 
+// Constants
+const HEADER_INDEX: usize = 0;
+const EXTRA_HEADER_INDEX: usize = 1;
+const NO_EXTRA_HEADER_VALUE: usize = 0;
+
 #[derive(Debug)]
 pub struct OopWithContents<'a> {
     index: usize,
     header: Header,
     extra_header: usize,
     contents: &'a mut [usize],
+}
+
+impl OopCommonState for OopWithContents<'_> {
+    fn get_index(&self) -> usize {
+        self.index
+    }
+    fn get_header(&self) -> &Header {
+        &self.header
+    }
+    fn get_header_mut(&mut self) -> &mut Header {
+        &mut self.header
+    }
+    fn get_extra_header(&self) -> usize {
+        self.extra_header
+    }
 }
 
 #[derive(Debug)]
@@ -36,12 +56,12 @@ impl OopHeaders {
     // Constructor
     pub fn new(index: usize, space: &MemorySpace) -> Self {
         let header = Header {
-            header_value: space[index],
+            header_value: space[index + HEADER_INDEX],
         };
         let extra_header = if header.has_extra_slot_header() {
-            space[index + 1]
+            space[index + EXTRA_HEADER_INDEX]
         } else {
-            0
+            NO_EXTRA_HEADER_VALUE
         };
         Self {
             index,
@@ -55,12 +75,12 @@ impl<'a> OopWithContents<'a> {
     // Constructor
     pub fn new(index: usize, contents: &'a mut [usize]) -> Self {
         let header = Header {
-            header_value: contents[0],
+            header_value: contents[HEADER_INDEX],
         };
         let extra_header = if header.has_extra_slot_header() {
-            contents[1]
+            contents[EXTRA_HEADER_INDEX]
         } else {
-            0
+            NO_EXTRA_HEADER_VALUE
         };
         Self {
             index,
@@ -70,54 +90,42 @@ impl<'a> OopWithContents<'a> {
         }
     }
 
-    // Constants
-    //const HEADER_INDEX: usize = 0;
-    pub const EXTRA_HEADER_INDEX: usize = 1;
-
     pub fn become_free_oop(&mut self) {
         self.get_header_mut().become_free_oop();
         self.apply_header();
     }
 
     pub fn apply_header(&mut self) {
-        self.contents[0] = self.header.header_value;
-        if self.extra_header != 0 {
-            self.contents[1] = self.header_value()
+        self.contents[HEADER_INDEX] = self.header.header_value;
+        if self.extra_header != NO_EXTRA_HEADER_VALUE {
+            self.contents[EXTRA_HEADER_INDEX] = self.header_value()
         }
     }
 
+    // We define the slots as 1 base.
+    // This simplifies the small object case
     fn slot_bound_check(&self, an_index: usize) {
         if an_index < 1 || an_index > self.number_of_slots() {
             panic!("slot access was out of bound")
         }
     }
 
-    //TODO(bigoop)
+    fn compute_slot_index(&self, an_index: usize) -> usize {
+        return if self.header.has_extra_slot_header() {
+            EXTRA_HEADER_INDEX + an_index
+        } else {
+            an_index
+        };
+    }
+
     pub fn slot_at_index(&self, an_index: usize) -> usize {
         self.slot_bound_check(an_index);
-        self.contents[an_index]
+        self.contents[self.compute_slot_index(an_index)]
     }
 
-    //TODO(bigoop)
     pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize) {
         self.slot_bound_check(an_index);
-        let slot_index = an_index;
-        self.contents[slot_index] = an_oop_address;
-    }
-}
-
-impl OopCommonState for OopWithContents<'_> {
-    fn get_index(&self) -> usize {
-        self.index
-    }
-    fn get_header(&self) -> &Header {
-        &self.header
-    }
-    fn get_header_mut(&mut self) -> &mut Header {
-        &mut self.header
-    }
-    fn get_extra_header(&self) -> usize {
-        self.extra_header
+        self.contents[self.compute_slot_index(an_index)] = an_oop_address;
     }
 }
 

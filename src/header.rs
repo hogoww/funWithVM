@@ -123,7 +123,7 @@ impl Header {
 
     pub fn header_size(&self) -> usize {
         if self.has_extra_slot_header() {
-            2
+            1 + 1
         } else {
             1
         }
