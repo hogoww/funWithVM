@@ -1,6 +1,6 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop_with_contents::OopWithContents;
+use crate::oop_slice::OopSlice;
 
 pub mod oop_constants {
     pub const HEADER_INDEX: usize = 0;
@@ -42,7 +42,7 @@ pub trait OopNavigation: OopCommonState {
         self.get_index() + self.oop_size()
     }
 
-    fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> OopWithContents<'b> {
+    fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> OopSlice<'b> {
         space.get_oop_at(self.next_oop_index())
     }
 }

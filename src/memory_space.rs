@@ -1,7 +1,7 @@
 use crate::header::Header;
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
-use crate::oop_with_contents::OopWithContents;
+use crate::oop_slice::OopSlice;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
@@ -33,11 +33,11 @@ impl MemorySpace {
         self.memory_vector.capacity() - 1 // 0 based
     }
 
-    pub fn first_oop(&mut self) -> OopWithContents {
+    pub fn first_oop(&mut self) -> OopSlice {
         memory_space_access::first_oop(self)
     }
 
-    pub fn get_oop_at(&mut self, index: usize) -> OopWithContents {
+    pub fn get_oop_at(&mut self, index: usize) -> OopSlice {
         memory_space_access::oop_at_index(index, self)
     }
 
