@@ -1,13 +1,10 @@
 use crate::allocator::where_to_allocate;
-use crate::header::Header;
 use crate::memory_space::MemorySpace;
+use crate::oop_carcass::OopCarcass;
 use crate::oop_common::OopCommonState;
 use crate::oop_headers::OopHeaders;
-use crate::special_class_index::SpecialClassIndexes;
 
-#[derive(Default)]
 pub struct OopBuilder {
-    //slots
     number_of_slots: usize,
     class_index: usize,
 }
@@ -33,48 +30,30 @@ impl OopBuilder {
     }
 
     pub fn build(&self, space: &mut MemorySpace) -> usize {
-        let mut oop_header = Header::new();
+        let mut oop_header = OopCarcass::default();
+        oop_header.set_number_of_slots(self.number_of_slots);
+        oop_header
+            .get_header_mut()
+            .set_class_index_bits(self.class_index);
 
-        if self.number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
-            oop_header.set_number_of_slots_to_max();
-        } else {
-            oop_header.set_number_of_slots_bits(self.number_of_slots);
-        }
+        let allocated_index: usize = where_to_allocate(oop_header.oop_size(), space);
 
-        let allocated_index: usize =
-            where_to_allocate(oop_header.header_size() + self.number_of_slots, space);
+        let free_header = OopHeaders::new(allocated_index, space);
 
-        let mut free_header = Header {
-            header_value: space[allocated_index],
-        };
-
-        let free_oop_size = OopHeaders::new(allocated_index, space).oop_size();
-        let new_oop_size = oop_header.header_size() + self.number_of_slots;
+        let free_oop_size = free_header.oop_size();
+        let new_oop_size = oop_header.oop_size();
 
         if free_oop_size != new_oop_size {
-            //TODO(big oop)
-            let new_free_number_of_slots = free_oop_size - new_oop_size - free_header.header_size();
-            if new_free_number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
-                free_header.set_number_of_slots_to_max();
-            } else {
-                free_header.set_number_of_slots_bits(self.number_of_slots);
-            }
-            free_header.set_number_of_slots_bits(new_free_number_of_slots);
+            let new_free_number_of_slots =
+                free_oop_size - new_oop_size - free_header.get_header().header_size();
+            let mut new_free_oop = OopCarcass::new_from(free_header);
+            new_free_oop.set_number_of_slots(new_free_number_of_slots);
 
-            free_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
             let new_free_oop_index: usize = allocated_index + new_oop_size;
-            space[new_free_oop_index] = free_header.header_value;
-            if free_header.has_extra_slot_header() {
-                space[new_free_oop_index + 1] = self.number_of_slots;
-            }
+            new_free_oop.apply_at_index_on_space(new_free_oop_index, space);
         }
 
-        oop_header.set_class_index_bits(self.class_index);
-        space[allocated_index] = oop_header.header_value;
-        if oop_header.has_extra_slot_header() {
-            space[allocated_index + 1] = self.number_of_slots;
-        }
-
+        oop_header.apply_at_index_on_space(allocated_index, space);
         allocated_index
     }
 

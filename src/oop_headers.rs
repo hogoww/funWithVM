@@ -1,10 +1,11 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
 use crate::oop_common::oop_constants;
-use crate::oop_common::OopCommonState;
+use crate::oop_common::{OopCommonState, OopNavigation};
 
 #[derive(Debug)]
 pub struct OopHeaders {
+    index: usize,
     header: Header,
     extra_header: usize,
 }
@@ -21,8 +22,13 @@ impl OopCommonState for OopHeaders {
     }
 }
 
+impl OopNavigation for OopHeaders {
+    fn get_index(&self) -> usize {
+        self.index
+    }
+}
+
 impl OopHeaders {
-    // Constructor
     pub fn new(index: usize, space: &MemorySpace) -> Self {
         let header = Header {
             header_value: space[index + oop_constants::HEADER_INDEX],
@@ -33,6 +39,7 @@ impl OopHeaders {
             oop_constants::NO_EXTRA_HEADER_VALUE
         };
         Self {
+            index,
             header,
             extra_header,
         }

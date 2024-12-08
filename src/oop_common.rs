@@ -27,7 +27,7 @@ pub trait OopCommonState {
 
     // Slots manipulation
     fn number_of_slots(&self) -> usize {
-        if self.get_extra_header() != 0 {
+        if self.get_header().has_extra_slot_header() {
             self.get_extra_header()
         } else {
             self.get_header().number_of_slots_bits()

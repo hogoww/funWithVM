@@ -4,12 +4,13 @@ pub mod header;
 pub mod memory_space;
 pub mod memory_space_access;
 pub mod oop_builder;
+pub mod oop_carcass;
 pub mod oop_common;
 pub mod oop_headers;
 pub mod oop_slice;
+
 pub mod slot_content;
 pub mod special_class_index;
-
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
 //use crate::oop::Oop;
