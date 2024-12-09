@@ -114,7 +114,7 @@ mod tests {
             builder.reset();
             let second_oop = builder.build(&mut space);
             let mut first_oop = space.first_oop();
-            first_oop.slot_at_put(1, second_oop);
+            first_oop.slot_at_index_put(1, second_oop);
 
             simple_garbage_collector::mark_oops_from_roots(roots, &mut space);
 
@@ -177,7 +177,7 @@ mod tests {
             builder.reset();
             let second_oop = builder.build(&mut space);
             let mut first_oop = space.first_oop();
-            first_oop.slot_at_put(1, second_oop);
+            first_oop.slot_at_index_put(1, second_oop);
 
             simple_garbage_collector::collect_from_roots(roots, &mut space);
 

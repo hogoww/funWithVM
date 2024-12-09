@@ -80,7 +80,7 @@ impl<'a> OopSlice<'a> {
         self.contents[self.compute_slot_index(an_index)]
     }
 
-    pub fn slot_at_put(&mut self, an_index: usize, an_oop_address: usize) {
+    pub fn slot_at_index_put(&mut self, an_index: usize, an_oop_address: usize) {
         self.slot_bound_check(an_index);
         self.contents[self.compute_slot_index(an_index)] = an_oop_address;
     }
@@ -114,8 +114,21 @@ mod tests {
         let slot_value: usize = 3;
         space[oop_index + slot_index] = slot_value;
 
-        let oop: OopSlice = space.first_oop();
-        assert_eq!(oop.slot_at_index(1), slot_value);
+		let oop: OopSlice = space.first_oop();
+        assert_eq!(oop.slot_at_index(slot_index), slot_value);
+    }
+	
+	#[test]
+    fn test_slot_at_index_put_sets_value() {
+        let mut space = MemorySpace::for_bit_size(240);
+        let mut builder = OopBuilder::new();
+        builder.set_number_of_slots(1);
+		let mut oop: OopSlice = space.first_oop();
+        let slot_index: usize = 1;
+        let slot_value: usize = 3;
+        oop.slot_at_index_put(slot_index, slot_value);
+
+        assert_eq!(oop.slot_at_index(slot_index), slot_value);
     }
 
     #[test]
@@ -123,26 +136,12 @@ mod tests {
         let mut space = MemorySpace::for_bit_size(1000);
         let mut builder = OopBuilder::new();
         builder.set_number_of_slots(500);
-        let oop_index: usize = builder.build(&mut space);
+		let mut oop: OopSlice = space.first_oop();
         let slot_index: usize = 250;
         let slot_value: usize = 42;
-        space[oop_index + slot_index] = slot_value;
+        oop.slot_at_index_put(slot_index, slot_value);
 
-        let oop: OopSlice = space.first_oop();
-        assert_eq!(oop.slot_at_index(1), slot_value);
-    }
-
-    #[test]
-    fn test_slot_at_put_sets_value() {
-        let mut space = MemorySpace::for_bit_size(240);
-        let mut builder = OopBuilder::new();
-        builder.set_number_of_slots(1);
-        builder.build(&mut space);
-        let slot_index: usize = 1;
-        let slot_value: usize = 3;
-
-        let mut oop: OopSlice = space.first_oop();
-        oop.slot_at_put(slot_index, slot_value);
-        assert_eq!(oop.slot_at_index(1), slot_value);
+		assert!(oop.get_header().has_extra_slot_header());
+        assert_eq!(oop.slot_at_index(slot_index), slot_value);
     }
 }
