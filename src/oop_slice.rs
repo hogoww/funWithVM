@@ -114,16 +114,16 @@ mod tests {
         let slot_value: usize = 3;
         space[oop_index + slot_index] = slot_value;
 
-		let oop: OopSlice = space.first_oop();
+        let oop: OopSlice = space.first_oop();
         assert_eq!(oop.slot_at_index(slot_index), slot_value);
     }
-	
-	#[test]
+
+    #[test]
     fn test_slot_at_index_put_sets_value() {
         let mut space = MemorySpace::for_bit_size(240);
         let mut builder = OopBuilder::new();
         builder.set_number_of_slots(1);
-		let mut oop: OopSlice = space.first_oop();
+        let mut oop: OopSlice = space.first_oop();
         let slot_index: usize = 1;
         let slot_value: usize = 3;
         oop.slot_at_index_put(slot_index, slot_value);
@@ -136,12 +136,12 @@ mod tests {
         let mut space = MemorySpace::for_bit_size(1000);
         let mut builder = OopBuilder::new();
         builder.set_number_of_slots(500);
-		let mut oop: OopSlice = space.first_oop();
+        let mut oop: OopSlice = space.first_oop();
         let slot_index: usize = 250;
         let slot_value: usize = 42;
         oop.slot_at_index_put(slot_index, slot_value);
 
-		assert!(oop.get_header().has_extra_slot_header());
+        assert!(oop.get_header().has_extra_slot_header());
         assert_eq!(oop.slot_at_index(slot_index), slot_value);
     }
 }

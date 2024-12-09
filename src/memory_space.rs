@@ -103,7 +103,7 @@ mod tests {
         );
     }
 
-    //In the following 3 test cases, we test when the global free oop needs to go to use the extra header
+    //In the following test cases, we test when the global free oop needs to go to use the extra header
     // Unfortunately, at the moment, it's a bit clumsy and we simply loose one slot.
     #[test]
     fn test_allocate_lower_bound_edge_case() {
@@ -127,5 +127,23 @@ mod tests {
     fn test_allocate_middle_bound_edge_case() {
         let mut space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS + 1);
         assert_eq!(space.first_oop().oop_size(), Header::MAX_NUMBER_OF_SLOTS);
+    }
+
+    #[test]
+    fn test_allocate_lower_bound_edge_case_end_index() {
+        let space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS - 1);
+        assert_eq!(space.get_end_index(), Header::MAX_NUMBER_OF_SLOTS - 2);
+    }
+
+    #[test]
+    fn test_allocate_exact_bound_edge_case_end_index() {
+        let space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS);
+        assert_eq!(space.get_end_index(), Header::MAX_NUMBER_OF_SLOTS - 1);
+    }
+
+    #[test]
+    fn test_allocate_middle_bound_edge_case_end_index() {
+        let space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS + 1);
+        assert_eq!(space.get_end_index(), Header::MAX_NUMBER_OF_SLOTS);
     }
 }

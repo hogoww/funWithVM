@@ -21,7 +21,6 @@ pub fn where_to_allocate(number_of_usize: usize, space: &mut MemorySpace) -> usi
 mod tests {
     use super::*;
     use crate::oop_builder::OopBuilder;
-    use crate::oop_common::OopNavigation;
 
     #[test]
     fn test_allocate_first_object() {
