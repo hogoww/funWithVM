@@ -29,21 +29,28 @@ impl OopBuilder {
         self.initialize();
     }
 
-    pub fn build(&self, space: &mut MemorySpace) -> usize {
-        let mut oop_header = OopCarcass::default();
-        oop_header.set_number_of_slots(self.number_of_slots);
-        oop_header
+    // This allows to bypass the allocation scheme, and to force put an oop somewhere.
+    // Useful when building the space, for instance.
+    pub fn build_oop_at(&self, index: usize, space: &mut MemorySpace) {
+        let mut new_oop_carcass = OopCarcass::default();
+        new_oop_carcass.set_number_of_slots(self.number_of_slots);
+        new_oop_carcass
             .get_header_mut()
             .set_class_index_bits(self.class_index);
+        new_oop_carcass.apply_at_index_on_space(index, space);
+    }
 
-        let allocated_index: usize = where_to_allocate(oop_header.oop_size(), space);
+    pub fn build(&self, space: &mut MemorySpace) -> usize {
+        let mut new_oop_carcass = OopCarcass::default();
+        new_oop_carcass.set_number_of_slots(self.number_of_slots);
+        let new_oop_size = new_oop_carcass.oop_size();
 
+        let allocated_index: usize = where_to_allocate(new_oop_carcass.oop_size(), space);
         let free_header = OopHeaders::new(allocated_index, space);
-
         let free_oop_size = free_header.oop_size();
-        let new_oop_size = oop_header.oop_size();
 
         if free_oop_size != new_oop_size {
+            // todo update header_size if the new oop isn't big anymore
             let new_free_number_of_slots =
                 free_oop_size - new_oop_size - free_header.get_header().header_size();
             let mut new_free_oop = OopCarcass::new_from(free_header);
@@ -53,7 +60,7 @@ impl OopBuilder {
             new_free_oop.apply_at_index_on_space(new_free_oop_index, space);
         }
 
-        oop_header.apply_at_index_on_space(allocated_index, space);
+        self.build_oop_at(allocated_index, space);
         allocated_index
     }
 

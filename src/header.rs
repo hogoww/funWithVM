@@ -109,7 +109,7 @@ impl Header {
 
     // testing
     pub fn has_extra_slot_header(&self) -> bool {
-        self.number_of_slots_bits() > Header::MAX_NUMBER_OF_SLOTS
+        self.number_of_slots_bits() == Header::EXTRA_SLOT_HEADER
     }
 
     pub fn is_free_oop(&self) -> bool {

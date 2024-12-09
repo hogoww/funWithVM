@@ -38,7 +38,7 @@ impl OopCarcass {
     }
 
     pub fn set_number_of_slots(&mut self, number_of_slots: usize) {
-        if self.number_of_slots() > Header::MAX_NUMBER_OF_SLOTS {
+        if number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
             self.header.set_number_of_slots_to_max();
             self.extra_header = number_of_slots;
         } else {

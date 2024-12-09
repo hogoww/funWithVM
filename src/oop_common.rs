@@ -8,6 +8,18 @@ pub mod oop_constants {
     pub const NO_EXTRA_HEADER_VALUE: usize = 0;
 }
 
+pub mod oop_utilities {
+    use crate::header::Header;
+
+    pub fn how_many_headers_for(some_memory_size: usize) -> usize {
+        if some_memory_size < Header::MAX_NUMBER_OF_SLOTS {
+            1
+        } else {
+            2
+        }
+    }
+}
+
 pub trait OopCommonState {
     fn get_header(&self) -> &Header;
     fn get_header_mut(&mut self) -> &mut Header;

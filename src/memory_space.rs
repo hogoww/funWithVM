@@ -1,6 +1,7 @@
-use crate::header::Header;
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
+use crate::oop_builder::OopBuilder;
+use crate::oop_common::oop_utilities::how_many_headers_for;
 use crate::oop_slice::OopSlice;
 use crate::special_class_index::SpecialClassIndexes;
 
@@ -11,18 +12,17 @@ pub struct MemorySpace {
 
 impl MemorySpace {
     pub fn for_bit_size(memory_space_size: usize) -> Self {
-        let mut memory_space: Vec<usize> = vec![0; memory_space_size];
+        let mut res: Self = Self {
+            memory_vector: vec![0; memory_space_size],
+        };
 
         // set first oop to be free & have all the slots in the space
-        let mut free_oop_header = Header::new();
-        free_oop_header.set_class_index_bits(SpecialClassIndexes::FreeObject as usize);
-        //TODO support spaces biggers than 256*sizeof(usize).
-        free_oop_header.set_number_of_slots_bits(memory_space_size - 1); // minus the header for the space
-        memory_space[0] = free_oop_header.header_value;
+        let mut builder = OopBuilder::new();
+        builder.set_class_index(SpecialClassIndexes::FreeObject as usize);
+        builder.set_number_of_slots(memory_space_size - how_many_headers_for(memory_space_size));
+        builder.build_oop_at(0, &mut res);
 
-        Self {
-            memory_vector: memory_space,
-        }
+        res
     }
 
     pub fn get_start_index(&self) -> usize {
@@ -72,6 +72,7 @@ where
 
 #[cfg(test)]
 mod tests {
+    use crate::header::Header;
     use crate::memory_space::MemorySpace;
     use crate::oop_common::OopCommonState;
     use crate::oop_common::OopNavigation;
@@ -100,5 +101,31 @@ mod tests {
             space.first_oop().next_oop_index() - 1,
             space.get_end_index()
         );
+    }
+
+    //In the following 3 test cases, we test when the global free oop needs to go to use the extra header
+    // Unfortunately, at the moment, it's a bit clumsy and we simply loose one slot.
+    #[test]
+    fn test_allocate_lower_bound_edge_case() {
+        let mut space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS - 1);
+        assert_eq!(
+            space.first_oop().oop_size(),
+            Header::MAX_NUMBER_OF_SLOTS - 1
+        );
+    }
+
+    #[test]
+    fn test_allocate_exact_bound_edge_case() {
+        let mut space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS);
+        assert_eq!(
+            space.first_oop().oop_size(),
+            Header::MAX_NUMBER_OF_SLOTS - 1
+        );
+    }
+
+    #[test]
+    fn test_allocate_middle_bound_edge_case() {
+        let mut space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS + 1);
+        assert_eq!(space.first_oop().oop_size(), Header::MAX_NUMBER_OF_SLOTS);
     }
 }
