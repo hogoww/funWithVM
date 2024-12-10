@@ -20,6 +20,9 @@ impl OopCommonState for OopSlice<'_> {
     fn get_extra_header(&self) -> usize {
         self.extra_header
     }
+    fn set_extra_header(&mut self, new_value: usize) {
+        self.extra_header = new_value;
+    }
 }
 
 impl OopNavigation for OopSlice<'_> {
@@ -54,8 +57,8 @@ impl<'a> OopSlice<'a> {
 
     pub fn apply_header(&mut self) {
         self.contents[oop_constants::HEADER_INDEX] = self.header.header_value;
-        if self.extra_header != oop_constants::NO_EXTRA_HEADER_VALUE {
-            self.contents[oop_constants::EXTRA_HEADER_INDEX] = self.header_value()
+        if self.header.has_extra_slot_header() {
+            self.contents[oop_constants::EXTRA_HEADER_INDEX] = self.extra_header
         }
     }
 

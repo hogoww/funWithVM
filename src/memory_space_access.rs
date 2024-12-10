@@ -22,6 +22,29 @@ impl MemorySpaceIterator {
         self.current_index = res.next_oop_index();
         Some(res)
     }
+
+    pub fn go_to_next(&mut self, space: &mut MemorySpace) {
+        let res = oop_header_at_index(self.current_index, space);
+        self.current_index = res.next_oop_index();
+    }
+
+    pub fn peak_next_headers(&self, space: &mut MemorySpace) -> Option<OopHeaders> {
+        if self.current_index > space.get_end_index() {
+            return None;
+        }
+
+        Some(oop_header_at_index(self.current_index, space))
+    }
+
+    pub fn next_headers(&mut self, space: &mut MemorySpace) -> Option<OopHeaders> {
+        if self.current_index > space.get_end_index() {
+            return None;
+        }
+
+        let res = oop_header_at_index(self.current_index, space);
+        self.current_index = res.next_oop_index();
+        Some(res)
+    }
 }
 
 impl Default for MemorySpaceIterator {
@@ -32,6 +55,14 @@ impl Default for MemorySpaceIterator {
 
 pub mod memory_space_access {
     use super::*;
+
+    pub fn oop_header_at_index(index: usize, space: &mut MemorySpace) -> OopHeaders {
+        OopHeaders::new(index, space)
+    }
+
+    pub fn first_oop_header(space: &mut MemorySpace) -> OopHeaders {
+        oop_header_at_index(0, space)
+    }
 
     pub fn oop_at_index(index: usize, space: &mut MemorySpace) -> OopSlice {
         let oop_size = OopHeaders::new(index, space).oop_size();

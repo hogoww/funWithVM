@@ -18,6 +18,9 @@ impl OopCommonState for OopCarcass {
     fn get_extra_header(&self) -> usize {
         self.extra_header
     }
+    fn set_extra_header(&mut self, new_value: usize) {
+        self.extra_header = new_value;
+    }
 }
 
 impl OopCarcass {
@@ -34,15 +37,6 @@ impl OopCarcass {
         space[index + oop_constants::HEADER_INDEX] = self.header.header_value;
         if self.header.has_extra_slot_header() {
             space[index + oop_constants::EXTRA_HEADER_INDEX] = self.number_of_slots();
-        }
-    }
-
-    pub fn set_number_of_slots(&mut self, number_of_slots: usize) {
-        if number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
-            self.header.set_number_of_slots_to_max();
-            self.extra_header = number_of_slots;
-        } else {
-            self.header.set_number_of_slots_bits(number_of_slots);
         }
     }
 }

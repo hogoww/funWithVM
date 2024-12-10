@@ -24,6 +24,7 @@ pub trait OopCommonState {
     fn get_header(&self) -> &Header;
     fn get_header_mut(&mut self) -> &mut Header;
     fn get_extra_header(&self) -> usize;
+    fn set_extra_header(&mut self, index: usize);
 
     fn is_free_oop(&self) -> bool {
         self.get_header().is_free_oop()
@@ -43,6 +44,16 @@ pub trait OopCommonState {
             self.get_extra_header()
         } else {
             self.get_header().number_of_slots_bits()
+        }
+    }
+
+    fn set_number_of_slots(&mut self, number_of_slots: usize) {
+        if number_of_slots > Header::MAX_NUMBER_OF_SLOTS {
+            self.get_header_mut().set_number_of_slots_to_max();
+            self.set_extra_header(number_of_slots);
+        } else {
+            self.get_header_mut()
+                .set_number_of_slots_bits(number_of_slots);
         }
     }
 }

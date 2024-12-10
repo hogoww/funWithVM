@@ -1,6 +1,7 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
 use crate::oop_common::oop_constants;
+use crate::oop_common::oop_utilities;
 use crate::oop_common::{OopCommonState, OopNavigation};
 
 #[derive(Debug)]
@@ -19,6 +20,9 @@ impl OopCommonState for OopHeaders {
     }
     fn get_extra_header(&self) -> usize {
         self.extra_header
+    }
+    fn set_extra_header(&mut self, new_value: usize) {
+        self.extra_header = new_value;
     }
 }
 
@@ -42,6 +46,24 @@ impl OopHeaders {
             index,
             header,
             extra_header,
+        }
+    }
+
+    //TODO(big oop)
+    pub fn merge_with(&mut self, oop: OopHeaders, space: &mut MemorySpace) {
+        // Merged oops only need one header !
+        let total_size = self.oop_size() + oop.oop_size();
+        let header_nb = oop_utilities::how_many_headers_for(total_size);
+        let new_nb_slots = total_size - header_nb;
+        self.set_number_of_slots(new_nb_slots);
+
+        self.apply_header(space);
+    }
+
+    fn apply_header(&self, space: &mut MemorySpace) {
+        space[self.get_index() + oop_constants::HEADER_INDEX] = self.header.header_value;
+        if self.get_header().has_extra_slot_header() {
+            space[self.get_index() + oop_constants::EXTRA_HEADER_INDEX] = self.get_extra_header()
         }
     }
 }
