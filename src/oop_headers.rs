@@ -49,6 +49,11 @@ impl OopHeaders {
         }
     }
 
+    pub fn become_free_oop(&mut self, space: &mut MemorySpace) {
+        self.get_header_mut().become_free_oop();
+        self.apply_header(space);
+    }
+
     //TODO(big oop)
     pub fn merge_with(&mut self, oop: OopHeaders, space: &mut MemorySpace) {
         // Merged oops only need one header !
@@ -60,7 +65,7 @@ impl OopHeaders {
         self.apply_header(space);
     }
 
-    fn apply_header(&self, space: &mut MemorySpace) {
+    pub fn apply_header(&self, space: &mut MemorySpace) {
         space[self.get_index() + oop_constants::HEADER_INDEX] = self.header.header_value;
         if self.get_header().has_extra_slot_header() {
             space[self.get_index() + oop_constants::EXTRA_HEADER_INDEX] = self.get_extra_header()
