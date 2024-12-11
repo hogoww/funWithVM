@@ -1,3 +1,7 @@
+#[cfg(test)]
+#[macro_use]
+extern crate parameterized;
+
 pub mod allocator;
 pub mod garbage_collector;
 pub mod header;

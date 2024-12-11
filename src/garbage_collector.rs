@@ -1,3 +1,4 @@
+
 mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
     use crate::oop_common::*;
@@ -68,14 +69,14 @@ mod tests {
     use crate::garbage_collector::simple_garbage_collector;
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
-    use crate::oop_common::OopCommonState;
+    use crate::oop_common::{ OopCommonState, oop_utilities };
 
     mod mark_tests {
         use super::*;
 
-        #[test]
-        fn test_mark_roots() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_mark_roots(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             roots.push(builder.build(&mut space));
@@ -85,9 +86,9 @@ mod tests {
             assert_eq!(space.first_oop().get_header().marked_bit(), 1);
         }
 
-        #[test]
-        fn test_mark_slot_of_root() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_mark_slot_of_root(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let mut builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             builder.set_number_of_slots(1);
@@ -105,9 +106,9 @@ mod tests {
             assert_eq!(iter.next(&mut space).unwrap().get_header().marked_bit(), 1);
         }
 
-        #[test]
-        fn test_sweep_clears_marked_bit() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_sweep_clears_marked_bit(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             roots.push(builder.build(&mut space));
@@ -123,9 +124,9 @@ mod tests {
     mod sweep_tests {
         use super::*;
 
-        #[test]
-        fn test_garbage_collection_creates_hole() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_creates_hole(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             builder.build(&mut space);
@@ -136,9 +137,9 @@ mod tests {
             assert!(space.first_oop().is_free_oop());
         }
 
-        #[test]
-        fn test_garbage_collection_does_not_reclaim_roots() {
-            let mut space = MemorySpace::for_bit_size(240);
+		#[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_does_not_reclaim_roots(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             roots.push(builder.build(&mut space));
@@ -148,9 +149,9 @@ mod tests {
             assert!(!space.first_oop().is_free_oop());
         }
 
-        #[test]
-        fn test_garbage_collection_does_not_reclaim_slot_of_root() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_does_not_reclaim_slot_of_root(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let mut builder = OopBuilder::new();
             let mut roots: Vec<usize> = Vec::new();
             builder.set_number_of_slots(1);
@@ -167,9 +168,9 @@ mod tests {
             assert!(!iter.next(&mut space).unwrap().is_free_oop());
         }
 
-        #[test]
-        fn test_garbage_collection_reclaims_all_objects_without_roots() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_reclaims_all_objects_without_roots(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let roots: Vec<usize> = Vec::new();
             builder.build(&mut space);
@@ -183,9 +184,9 @@ mod tests {
     mod merging_tests {
         use super::*;
 
-        #[test]
-        fn test_garbage_collection_compacts_free_oop_reclaimed_after_a_free_oop() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_compacts_free_oop_reclaimed_after_a_free_oop(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let roots: Vec<usize> = Vec::new();
             builder.build(&mut space);
@@ -194,12 +195,12 @@ mod tests {
 
             simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-            assert_eq!(space.first_oop().number_of_slots(), 239);
+            assert_eq!(space.first_oop().number_of_slots(), space_size -oop_utilities::how_many_headers_for(space_size));
         }
 
-        #[test]
-        fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop() {
-            let mut space = MemorySpace::for_bit_size(240);
+        #[parameterized(space_size={ 240, 1000 })]
+        fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop(space_size: usize) {
+            let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let roots: Vec<usize> = Vec::new();
             builder.build(&mut space);
@@ -207,7 +208,7 @@ mod tests {
 
             simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-            assert_eq!(space.first_oop().number_of_slots(), 239);
+            assert_eq!(space.first_oop().number_of_slots(), space_size - oop_utilities::how_many_headers_for(space_size));
         }
     }
 }
