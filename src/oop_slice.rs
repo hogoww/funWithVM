@@ -1,6 +1,7 @@
 use crate::header::Header;
 use crate::oop_common::oop_constants;
 use crate::oop_common::{OopCommonState, OopNavigation};
+use crate::slot_content::SlotContent;
 
 #[derive(Debug)]
 pub struct OopSlice<'a> {
@@ -86,6 +87,19 @@ impl<'a> OopSlice<'a> {
     pub fn slot_at_index_put(&mut self, an_index: usize, an_oop_address: usize) {
         self.slot_bound_check(an_index);
         self.contents[self.compute_slot_index(an_index)] = an_oop_address;
+    }
+
+    pub fn slots_select_into(
+        &self,
+        select_function: fn(&SlotContent) -> bool,
+        collection: &mut Vec<usize>,
+    ) {
+        for index in 1..=self.number_of_slots() {
+            let slot_value = self.slot_at_index(index);
+            if select_function(&SlotContent::new(slot_value)) {
+                collection.push(slot_value);
+            }
+        }
     }
 }
 

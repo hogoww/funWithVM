@@ -1,7 +1,6 @@
 mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
     use crate::oop_common::*;
-    //use crate::oop_headers::OopHeaders;
     use crate::oop_slice::OopSlice;
     use crate::slot_content::SlotContent;
 
@@ -23,15 +22,7 @@ mod simple_garbage_collector {
                 an_oop.get_header_mut().set_marked_bit();
                 an_oop.apply_header();
 
-                //TODO(slots)
-                // FLAG should NOT iterate over slots. This is the Oop responsibility
-                let number_of_slots: usize = an_oop.get_header().number_of_slots_bits();
-                for index in 1..=number_of_slots {
-                    let slot_content = SlotContent::new(an_oop.slot_at_index(index));
-                    if slot_content.is_slot_oop() {
-                        oop_to_mark.push(slot_content.get_content());
-                    }
-                }
+                an_oop.slots_select_into(SlotContent::is_slot_oop, &mut oop_to_mark);
             }
         }
     }
