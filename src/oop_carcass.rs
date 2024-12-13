@@ -24,7 +24,7 @@ impl OopCommonState for OopCarcass {
 }
 
 impl OopCarcass {
-    pub fn new_from<T: OopCommonState>(oop: T) -> Self {
+    pub fn new_from<T: OopCommonState>(oop: &T) -> Self {
         Self {
             header: Header {
                 header_value: oop.header_value(),

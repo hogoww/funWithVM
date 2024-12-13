@@ -119,7 +119,7 @@ mod tests {
         let mut space = MemorySpace::for_bit_size(Header::MAX_NUMBER_OF_SLOTS);
         assert_eq!(
             space.first_oop().oop_size(),
-            Header::MAX_NUMBER_OF_SLOTS - 1
+            Header::MAX_NUMBER_OF_SLOTS
         );
     }
 

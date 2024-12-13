@@ -53,7 +53,7 @@ impl OopBuilder {
             // todo update header_size if the new oop isn't big anymore
             let new_free_number_of_slots =
                 free_oop_size - new_oop_size - free_header.get_header().header_size();
-            let mut new_free_oop = OopCarcass::new_from(free_header);
+            let mut new_free_oop = OopCarcass::new_from(&free_header);
             new_free_oop.set_number_of_slots(new_free_number_of_slots);
 
             let new_free_oop_index: usize = allocated_index + new_oop_size;
