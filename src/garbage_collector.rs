@@ -1,4 +1,3 @@
-
 mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
     use crate::oop_common::*;
@@ -69,7 +68,7 @@ mod tests {
     use crate::garbage_collector::simple_garbage_collector;
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
-    use crate::oop_common::{ OopCommonState, oop_utilities };
+    use crate::oop_common::{oop_utilities, OopCommonState};
 
     mod mark_tests {
         use super::*;
@@ -137,7 +136,7 @@ mod tests {
             assert!(space.first_oop().is_free_oop());
         }
 
-		#[parameterized(space_size={ 240, 1000 })]
+        #[parameterized(space_size={ 240, 1000 })]
         fn test_garbage_collection_does_not_reclaim_roots(space_size: usize) {
             let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
@@ -195,11 +194,16 @@ mod tests {
 
             simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-            assert_eq!(space.first_oop().number_of_slots(), space_size -oop_utilities::how_many_headers_for(space_size));
+            assert_eq!(
+                space.first_oop().number_of_slots(),
+                space_size - oop_utilities::how_many_headers_for(space_size)
+            );
         }
 
         #[parameterized(space_size={ 240, 1000 })]
-        fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop(space_size: usize) {
+        fn test_garbage_collection_compacts_free_oop_reclaimed_before_a_free_oop(
+            space_size: usize,
+        ) {
             let mut space = MemorySpace::for_bit_size(space_size);
             let builder = OopBuilder::new();
             let roots: Vec<usize> = Vec::new();
@@ -208,7 +212,10 @@ mod tests {
 
             simple_garbage_collector::collect_from_roots(roots, &mut space);
 
-            assert_eq!(space.first_oop().number_of_slots(), space_size - oop_utilities::how_many_headers_for(space_size));
+            assert_eq!(
+                space.first_oop().number_of_slots(),
+                space_size - oop_utilities::how_many_headers_for(space_size)
+            );
         }
     }
 }
