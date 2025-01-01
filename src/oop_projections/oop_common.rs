@@ -65,6 +65,7 @@ pub trait OopNavigation: OopCommonState {
         self.get_index() + self.oop_size()
     }
 
+	#[allow(dead_code)]
     fn next_oop<'b>(&self, space: &'b mut MemorySpace) -> OopSlice<'b> {
         space.get_oop_at(self.next_oop_index())
     }
