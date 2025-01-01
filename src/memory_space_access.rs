@@ -1,8 +1,8 @@
 use crate::memory_space::MemorySpace;
 use crate::memory_space_access::memory_space_access::*;
-use crate::oop_common::{OopCommonState, OopNavigation};
-use crate::oop_headers::OopHeaders;
-use crate::oop_slice::OopSlice;
+use crate::oop_projections::oop_common::{OopCommonState, OopNavigation};
+use crate::oop_projections::oop_headers::OopHeaders;
+use crate::oop_projections::oop_slice::OopSlice;
 
 pub struct MemorySpaceIterator {
     current_index: usize,

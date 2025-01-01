@@ -1,9 +1,7 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop_carcass::OopCarcass;
-use crate::oop_common::oop_constants;
-use crate::oop_common::oop_utilities;
-use crate::oop_common::{OopCommonState, OopNavigation};
+use crate::oop_projections::oop_carcass::OopCarcass;
+use crate::oop_projections::oop_common::{oop_constants, oop_utilities, OopCommonState, OopNavigation};
 
 #[derive(Debug)]
 pub struct OopHeaders {

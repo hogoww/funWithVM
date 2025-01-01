@@ -8,10 +8,7 @@ pub mod header;
 pub mod memory_space;
 pub mod memory_space_access;
 pub mod oop_builder;
-pub mod oop_carcass;
-pub mod oop_common;
-pub mod oop_headers;
-pub mod oop_slice;
+mod oop_projections;
 
 pub mod slot_content;
 pub mod special_class_index;

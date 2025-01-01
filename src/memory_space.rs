@@ -1,8 +1,8 @@
 use crate::memory_space_access::memory_space_access;
 use crate::memory_space_access::MemorySpaceIterator;
 use crate::oop_builder::OopBuilder;
-use crate::oop_common::oop_utilities::how_many_headers_for;
-use crate::oop_slice::OopSlice;
+use crate::oop_projections::oop_common::oop_utilities::how_many_headers_for;
+use crate::oop_projections::oop_slice::OopSlice;
 use crate::special_class_index::SpecialClassIndexes;
 
 #[derive(Debug)]
@@ -74,8 +74,8 @@ where
 mod tests {
     use crate::header::Header;
     use crate::memory_space::MemorySpace;
-    use crate::oop_common::OopCommonState;
-    use crate::oop_common::OopNavigation;
+    use crate::oop_projections::oop_common::OopCommonState;
+    use crate::oop_projections::oop_common::OopNavigation;
 
     #[test]
     fn test_unfilled_space_first_oop_is_free() {

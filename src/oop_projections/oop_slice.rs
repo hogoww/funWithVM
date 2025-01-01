@@ -1,6 +1,5 @@
 use crate::header::Header;
-use crate::oop_common::oop_constants;
-use crate::oop_common::{OopCommonState, OopNavigation};
+use crate::oop_projections::oop_common::{oop_constants, OopCommonState, OopNavigation};
 use crate::slot_content::SlotContent;
 
 #[derive(Debug)]
@@ -107,8 +106,8 @@ impl<'a> OopSlice<'a> {
 mod tests {
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
-    use crate::oop_common::OopCommonState;
-    use crate::oop_slice::OopSlice;
+    use crate::oop_projections::oop_common::OopCommonState;
+    use crate::oop_projections::oop_slice::OopSlice;
 
     #[test]
     fn become_free_oop_is_free_oop() {

@@ -1,7 +1,7 @@
 mod simple_garbage_collector {
     use crate::memory_space::MemorySpace;
-    use crate::oop_common::*;
-    use crate::oop_slice::OopSlice;
+    use crate::oop_projections::oop_common::*;
+    use crate::oop_projections::oop_slice::OopSlice;
     use crate::slot_content::SlotContent;
 
     #[allow(dead_code)]
@@ -59,7 +59,7 @@ mod tests {
     use crate::garbage_collector::simple_garbage_collector;
     use crate::memory_space::MemorySpace;
     use crate::oop_builder::OopBuilder;
-    use crate::oop_common::{oop_utilities, OopCommonState};
+    use crate::oop_projections::oop_common::{oop_utilities, OopCommonState};
 
     mod mark_tests {
         use super::*;

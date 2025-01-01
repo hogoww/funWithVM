@@ -1,8 +1,8 @@
 use crate::allocator::where_to_allocate;
 use crate::memory_space::MemorySpace;
-use crate::oop_carcass::OopCarcass;
-use crate::oop_common::OopCommonState;
-use crate::oop_headers::OopHeaders;
+use crate::oop_projections::oop_carcass::OopCarcass;
+use crate::oop_projections::oop_common::OopCommonState;
+use crate::oop_projections::oop_headers::OopHeaders;
 
 pub struct OopBuilder {
     number_of_slots: usize,

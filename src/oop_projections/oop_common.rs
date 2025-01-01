@@ -1,6 +1,6 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop_slice::OopSlice;
+use crate::oop_projections::oop_slice::OopSlice;
 
 pub mod oop_constants {
     pub const HEADER_INDEX: usize = 0;

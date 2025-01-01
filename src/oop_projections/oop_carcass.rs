@@ -1,6 +1,6 @@
 use crate::header::Header;
 use crate::memory_space::MemorySpace;
-use crate::oop_common::{oop_constants, OopCommonState};
+use crate::oop_projections::oop_common::{oop_constants, OopCommonState};
 
 #[derive(Debug, Default)]
 pub struct OopCarcass {
